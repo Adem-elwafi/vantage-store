@@ -2,118 +2,27 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FiSearch, FiShoppingCart, FiStar, FiHeart } from 'react-icons/fi';
+import { useProducts } from '../hooks/useProducts';
 
 const categories = ['All', 'Laptops', 'Smartphones', 'Headphones', 'Smartwatches'];
 
-const products = [
-  {
-    id: 1,
-    name: 'MacBook Pro 14" M2',
-    price: 1999.99,
-    category: 'Laptops',
-    rating: 4.8,
-    isNew: true,
-    image: 'https://macfinder.co.uk/wp-content/uploads/2022/12/img-MacBook-Pro-Retina-14-Inch-23934.jpg',
-  },
-  {
-    id: 2,
-    name: 'iPhone 15 Pro',
-    price: 999.00,
-    category: 'Smartphones',
-    rating: 4.7,
-    isNew: true,
-    image: 'https://eshop.hkcsl.com/on/demandware.static/-/Sites-master-hkt-hk/default/dwcdd8cb96/images/IP15_promaxscol/4019641_1.jpg',
-  },
-  {
-    id: 3,
-    name: 'Sony WH-1000XM5',
-    price: 349.99,
-    category: 'Headphones',
-    rating: 4.8,
-    isNew: true,
-    image: 'https://static1.pocketnowimages.com/wordpress/wp-content/uploads/styles/xxlarge/public/2022-05/LI%20WH1000%20XM5%20Colors.jpg',
-  },
-  {
-    id: 4,
-    name: 'Samsung Galaxy Watch 6',
-    price: 299.99,
-    category: 'Smartwatches',
-    rating: 4.5,
-    isNew: true,
-    image: 'https://360-reader.com/wp-content/uploads/2023/07/Samsung-Galaxy-Watch-Band-20mm.png',
-  },
-  {
-    id: 5,
-    name: 'Dell XPS 15',
-    price: 1799.99,
-    category: 'Laptops',
-    rating: 4.7,
-    image: 'https://tse2.mm.bing.net/th/id/OIP.gJU7K0cumScePGJ8ynPbngHaEL?rs=1&pid=ImgDetMain&o=7&rm=3',
-  },
-  {
-    id: 6,
-    name: 'Samsung Galaxy S23 Ultra',
-    price: 1199.99,
-    category: 'Smartphones',
-    rating: 4.8,
-    image: 'https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1709103019/Croma%20Assets/Communication/Mobiles/Images/275154_10_duxhla.png',
-  },
-  {
-    id: 7,
-    name: 'Bose QuietComfort 45',
-    price: 329.00,
-    category: 'Headphones',
-    rating: 4.7,
-    image: 'https://th.bing.com/th/id/R.90918a5a2c22d2a2dd562f30f78fb921?rik=%2bVmMjigkHej3Jg&pid=ImgRaw&r=0',
-  },
-  {
-    id: 8,
-    name: 'Apple Watch Series 9',
-    price: 429.00,
-    category: 'Smartwatches',
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&auto=format&fit=crop&q=80&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    id: 9,
-    name: 'Microsoft Surface Laptop 5',
-    price: 1299.99,
-    category: 'Laptops',
-    rating: 4.6,
-    image: 'https://clarkdeals.com/wp-content/uploads/2022/09/microsoft-surface-laptop-935x604.png'
-  },
-  {
-    id: 10,
-    name: 'Google Pixel 8 Pro',
-    price: 899.00,
-    category: 'Smartphones',
-    rating: 4.7,
-    image: 'https://m.media-amazon.com/images/I/713eEl39eLL.jpg',
-    isNew: true
-  }
-];
+
 
 export default function Shop() {
   const [searchParams] = useSearchParams();
   const filter = searchParams.get('filter');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [cartCount, setCartCount] = useState(0);
   const [isNewArrivals, setIsNewArrivals] = useState(false);
-
+  const { getProductsByCategory } = useProducts();
+  const [selectedCategory, setSelectedCategory] = useState('All');
   // Update filter state when URL changes
   useEffect(() => {
     setIsNewArrivals(filter === 'new-arrivals');
   }, [filter]);
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = searchTerm === '' || 
+const filteredProducts = getProductsByCategory(selectedCategory).filter(product => {
+    return searchTerm === '' || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || 
-      product.category === selectedCategory;
-    const matchesNewFilter = !isNewArrivals || product.isNew;
-    
-    return matchesSearch && matchesCategory && matchesNewFilter;
   });
 
   // Render the active filter tag

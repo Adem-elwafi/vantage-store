@@ -3,133 +3,152 @@ import { FiStar, FiShoppingCart, FiHeart, FiChevronLeft, FiChevronRight } from '
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
-import products from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 
 const Bestsellers = () => {
   const carouselRef = useRef(null);
+  const modalRef = useRef(null);
+  const lastFocusedElement = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [touchStartX, setTouchStartX] = useState(0);
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef(null);
-  const lastFocusedElement = useRef(null);
+  const { getBestsellers } = useProducts();
+  const bestsellerList = getBestsellers();
+  const dispatch = useDispatch();
 
-  // Update itemsPerPage on window resize
   useEffect(() => {
-    function updateLayout() {
-      const w = window.innerWidth;
-      if (w >= 1024) setItemsPerPage(4);
-      else if (w >= 640) setItemsPerPage(2);
+    const updateLayout = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) setItemsPerPage(4);
+      else if (width >= 640) setItemsPerPage(2);
       else setItemsPerPage(1);
-    }
+    };
+
     updateLayout();
     window.addEventListener('resize', updateLayout);
     return () => window.removeEventListener('resize', updateLayout);
   }, []);
 
-  // Scroll carousel to currentIndex
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
-    const scrollAmount = el.clientWidth * currentIndex;
-    el.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+    el.scrollTo({ left: el.clientWidth * currentIndex, behavior: 'smooth' });
   }, [currentIndex]);
 
-  // Handle modal keyboard navigation and focus trap
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (event) => {
       if (!isModalOpen) return;
-      
-      if (e.key === 'Escape') {
+
+      if (event.key === 'Escape') {
         closeModal();
+        return;
       }
-      
-      // Trap focus inside modal
-      if (e.key === 'Tab') {
-        const focusableElements = modalRef.current?.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        
-        if (focusableElements.length === 0) return;
-        
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement.focus();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
+
+      if (event.key !== 'Tab') return;
+
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen]);
 
-  // Handlers
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  const pageCount = Math.max(1, Math.ceil(bestsellerList.length / itemsPerPage));
+
   const handlePrev = useCallback(() => {
-    setCurrentIndex((i) => Math.max(i - 1, 0));
+    setCurrentIndex((index) => Math.max(index - 1, 0));
   }, []);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((i) => Math.min(i + 1, Math.ceil(products.length / itemsPerPage) - 1));
-  }, [itemsPerPage]);
+    setCurrentIndex((index) => Math.min(index + 1, pageCount - 1));
+  }, [pageCount]);
 
-  const onTouchStart = useCallback((e) => {
-    setTouchStartX(e.touches[0].pageX);
+  const onTouchStart = useCallback((event) => {
+    setTouchStartX(event.touches[0].pageX);
   }, []);
-  
-  const onTouchEnd = useCallback((e) => {
-    const diff = touchStartX - e.changedTouches[0].pageX;
-    if (diff > 50) handleNext();
-    if (diff < -50) handlePrev();
-  }, [handleNext, handlePrev, touchStartX]);
-  
+
+  const onTouchEnd = useCallback(
+    (event) => {
+      const diff = touchStartX - event.changedTouches[0].pageX;
+      if (diff > 50) handleNext();
+      if (diff < -50) handlePrev();
+    },
+    [handleNext, handlePrev, touchStartX]
+  );
+
   const openModal = useCallback((product) => {
     lastFocusedElement.current = document.activeElement;
     setModalProduct(product);
     setIsModalOpen(true);
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
   }, []);
-  
+
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    document.body.style.overflow = ''; // Re-enable background scrolling
-    if (lastFocusedElement.current) {
+    setModalProduct(null);
+    document.body.style.overflow = '';
+
+    if (lastFocusedElement.current && typeof lastFocusedElement.current.focus === 'function') {
       lastFocusedElement.current.focus();
     }
   }, []);
-  
-  const dispatch = useDispatch();
 
-  const handleAddToCart = useCallback((product, e) => {
-    e?.stopPropagation();
-    dispatch(addItemToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity: 1
-    }));
-  }, [dispatch]);
-  
-  const handleAddToWishlist = useCallback((product, e) => {
-    e?.stopPropagation();
-    dispatch(addToWishlist({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0]
-    }));
-  }, [dispatch]);
+  const handleAddToCart = useCallback(
+    (product, event) => {
+      event?.stopPropagation();
+      dispatch(
+        addItemToCart({
+          id: product.id,
+          name: product.name,
+          price: product.onSale ? product.salePrice : product.price,
+          image: product.image,
+          quantity: 1,
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const handleAddToWishlist = useCallback(
+    (product, event) => {
+      event?.stopPropagation();
+      dispatch(
+        addToWishlist({
+          id: product.id,
+          name: product.name,
+          price: product.onSale ? product.salePrice : product.price,
+          image: product.image,
+        })
+      );
+    },
+    [dispatch]
+  );
 
   return (
-    <section className=" max-w-7xl mx-auto px-4 py-12">
-      {/* Header */}
+    <section className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">
           Best Sellers
@@ -139,185 +158,173 @@ const Bestsellers = () => {
         </a>
       </div>
 
-      {/* Carousel */}
       <div className="relative">
         <button
+          type="button"
           aria-label="Previous"
           onClick={handlePrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#EEEEEE] p-2 rounded-full shadow hover:bg-[#08CB00] hover:text-white z-10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           disabled={currentIndex === 0}
+          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#EEEEEE] p-2 shadow transition-colors hover:bg-[#08CB00] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {/* Left Arrow */}
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-          </svg>
+          <FiChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
 
         <div
           ref={carouselRef}
+          onScroll={() => {
+            const el = carouselRef.current;
+            if (!el) return;
+            const nextIndex = Math.round(el.scrollLeft / el.clientWidth);
+            setCurrentIndex(Math.max(0, Math.min(nextIndex, pageCount - 1)));
+          }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
           className="flex space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 scrollbar-hide"
         >
-          {products.map((p, idx) => (
-            <div
-              key={p.id}
-              className="group relative min-w-[250px] sm:min-w-[280px] bg-[#EEEEEE] rounded-lg shadow-sm hover:shadow-lg transition p-4 snap-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#08CB00]"
-              role="button"
-              tabIndex={0}
-              onClick={() => openModal(p)}
-              onKeyDown={(e) => e.key === 'Enter' && openModal(p)}
-              aria-label={`View details for ${p.title}`}
+          {bestsellerList.map((product) => (
+            <article
+              key={product.id}
+              onClick={() => openModal(product)}
+              className="group min-w-[250px] sm:min-w-[280px] lg:min-w-[calc((100%-4.5rem)/4)] snap-start overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
             >
-              {/* Sale/Bestseller Badge */}
-              {p.onSale && (
-                <span className="absolute top-2 left-2 bg-[#08CB00] text-white text-xs uppercase px-2 py-1 rounded">
-                  Sale
-                </span>
-              )}
-              {p.bestseller && !p.onSale && (
-                <span className="absolute top-2 left-2 bg-[#253900] text-white text-xs uppercase px-2 py-1 rounded">
-                  Bestseller
-                </span>
-              )}
-
-              {/* Wishlist Icon */}
-              <button 
-                className="absolute top-2 right-2 text-[#000000] hover:text-[#08CB00] transition focus:outline-none focus:ring-2 focus:ring-[#08CB00] rounded-full p-1"
-                onClick={(e) => handleAddToWishlist(p.id, e)}
-                aria-label={`Add ${p.title} to wishlist`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 011.07-1.562..." />
-                </svg>
-              </button>
-
-              {/* Image */}
-              <div className="overflow-hidden rounded-md">
+              <div className="relative aspect-square overflow-hidden bg-[#F5F5F5]">
                 <img
-                  src={p.image}
-                  alt={p.title}
+                  src={product.image}
+                  alt={product.name}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
-                  className="w-full h-48 object-cover transform group-hover:scale-105 transition"
                 />
+                {product.onSale && (
+                  <span className="absolute left-3 top-3 rounded-full bg-[#08CB00] px-3 py-1 text-xs font-semibold text-white">
+                    Sale
+                  </span>
+                )}
               </div>
 
-              {/* Title & Price */}
-              <h3 className="mt-4 text-lg font-medium text-[#000000] line-clamp-2 h-14">{p.title}</h3>
-              <div className="mt-1 flex items-center space-x-2 text-[#000000]">
-                {p.onSale && <span className="line-through text-gray-600">${p.price}</span>}
-                <span className="text-xl font-semibold text-[#08CB00]">
-                  ${p.onSale ? p.salePrice : p.price}
-                </span>
-              </div>
+              <div className="p-4">
+                <div className="mb-2 flex items-center gap-1 text-yellow-500">
+                  {[...Array(5)].map((_, index) => (
+                    <FiStar
+                      key={index}
+                      className={index < Math.round(product.rating) ? 'fill-current' : 'text-gray-300'}
+                    />
+                  ))}
+                </div>
 
-              {/* Rating */}
-              <div className="mt-2 flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-4 h-4 ${i < p.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921..." />
-                  </svg>
-                ))}
-              </div>
+                <h3 className="text-lg font-semibold text-[#253900]">{product.name}</h3>
+                <p className="mt-1 text-sm text-gray-600">{product.description}</p>
 
-              {/* Actions */}
-              <div className="mt-4 flex space-x-2">
-                <button
-                  onClick={(e) => handleAddToCart(p, e)}
-                  className="flex-1 bg-[#253900] text-white py-2 rounded hover:bg-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2 transform hover:-translate-y-0.5 transition"
-                  aria-label={`Add ${p.title} to cart`}
-                >
-                  Add to Cart
-                </button>
-                <button
-                  onClick={() => openModal(p)}
-                  className="bg-[#EEEEEE] text-[#000000] py-2 px-3 rounded hover:bg-[#08CB00] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2 transition"
-                  aria-label={`Quick view ${p.title}`}
-                >
-                  Quick View
-                </button>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-[#253900]">
+                      ${product.onSale ? product.salePrice : product.price}
+                    </span>
+                    {product.onSale && (
+                      <span className="text-sm text-gray-500 line-through">${product.price}</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(event) => handleAddToCart(product, event)}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#253900] transition-colors hover:bg-[#253900] hover:text-white"
+                      aria-label={`Add ${product.name} to cart`}
+                    >
+                      <FiShoppingCart />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(event) => handleAddToWishlist(product, event)}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#253900] transition-colors hover:bg-[#08CB00] hover:text-white"
+                      aria-label={`Add ${product.name} to wishlist`}
+                    >
+                      <FiHeart />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </article>
           ))}
+
+          {!bestsellerList.length && (
+            <div className="w-full rounded-2xl border border-dashed border-black/20 p-10 text-center text-gray-600">
+              No best sellers found.
+            </div>
+          )}
         </div>
 
         <button
+          type="button"
           aria-label="Next"
           onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#EEEEEE] p-2 rounded-full shadow hover:bg-[#08CB00] hover:text-white z-10 transition-colors"
+          disabled={currentIndex >= pageCount - 1}
+          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#EEEEEE] p-2 shadow transition-colors hover:bg-[#08CB00] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {/* Right Arrow */}
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-          </svg>
+          <FiChevronRight className="h-5 w-5 text-gray-600" />
         </button>
       </div>
 
-      {/* Pagination Dots */}
-      <div className="flex justify-center space-x-2 mt-4">
-        {Array.from({ length: Math.ceil(products.length / itemsPerPage) }).map((_, i) => (
+      <div className="mt-4 flex justify-center space-x-2">
+        {Array.from({ length: pageCount }).map((_, index) => (
           <button
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-[#000000]'}`}
-            aria-label={`Go to page ${i + 1}`}
+            key={index}
+            type="button"
+            onClick={() => setCurrentIndex(index)}
+            className={`h-2.5 rounded-full transition-all ${currentIndex === index ? 'w-8 bg-[#08CB00]' : 'w-2.5 bg-black/20'}`}
+            aria-label={`Go to page ${index + 1}`}
           />
         ))}
       </div>
 
-      {/* Quick View Modal */}
-      <div 
-        className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isModalOpen ? 'opacity-100 z-50' : 'opacity-0 pointer-events-none'}`}
+      <div
+        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 transition-opacity duration-300 ${isModalOpen ? 'z-50 opacity-100' : 'pointer-events-none opacity-0'}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
         onClick={closeModal}
       >
         {modalProduct && (
-          <div 
+          <div
             ref={modalRef}
-            className="bg-[#EEEEEE] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative transform transition-all"
-            onClick={(e) => e.stopPropagation()}
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-[#EEEEEE] transform transition-all"
+            onClick={(event) => event.stopPropagation()}
           >
-            <div className="sticky top-0 bg-[#EEEEEE] p-4 border-b border-[#000000] flex justify-between items-center">
+            <div className="sticky top-0 flex items-center justify-between border-b border-[#000000] bg-[#EEEEEE] p-4">
               <h2 id="modal-title" className="text-2xl font-semibold">
-                {modalProduct.title}
+                {modalProduct.name}
               </h2>
               <button
+                type="button"
                 aria-label="Close modal"
                 onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-full p-1"
+                className="rounded-full p-1 text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 hover:text-gray-700"
                 autoFocus
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            
-            <div className="p-6 md:flex gap-6">
-              <div className="md:w-1/2 mb-6 md:mb-0">
+
+            <div className="gap-6 p-6 md:flex">
+              <div className="mb-6 md:mb-0 md:w-1/2">
                 <img
                   src={modalProduct.image}
-                  alt={modalProduct.title}
-                  className="w-full h-64 md:h-80 object-cover rounded-lg"
+                  alt={modalProduct.name}
+                  className="h-64 w-full rounded-lg object-cover md:h-80"
                   loading="lazy"
                 />
               </div>
-              
+
               <div className="md:w-1/2">
                 <div className="mb-4">
-                  <div className="flex items-center mb-2">
-                    <div className="flex items-center mr-2">
-                      {[...Array(5)].map((_, i) => (
+                  <div className="mb-2 flex items-center">
+                    <div className="mr-2 flex items-center">
+                      {[...Array(5)].map((_, index) => (
                         <svg
-                          key={i}
-                          className={`w-5 h-5 ${i < modalProduct.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                          key={index}
+                          className={`h-5 w-5 ${index < modalProduct.rating ? 'text-yellow-400' : 'text-gray-300'}`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -325,12 +332,10 @@ const Bestsellers = () => {
                         </svg>
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {modalProduct.rating}/5.0
-                    </span>
+                    <span className="text-sm text-gray-600">{modalProduct.rating}/5.0</span>
                   </div>
-                  
-                  <div className="text-2xl font-bold text-gray-900 mb-4">
+
+                  <div className="mb-4 text-2xl font-bold text-gray-900">
                     ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
                     {modalProduct.onSale && (
                       <span className="ml-2 text-sm text-gray-500 line-through">
@@ -339,27 +344,27 @@ const Bestsellers = () => {
                     )}
                   </div>
                 </div>
-                
-                <p className="text-gray-700 mb-6">{modalProduct.description}</p>
-                
+
+                <p className="mb-6 text-gray-700">{modalProduct.description}</p>
+
                 <div className="flex space-x-4">
                   <button
-                    onClick={(e) => {
-                      handleAddToCart(modalProduct, e);
+                    type="button"
+                    onClick={(event) => {
+                      handleAddToCart(modalProduct, event);
                       closeModal();
                     }}
-                    className="flex-1 bg-[#253900] text-white py-3 px-6 rounded hover:bg-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2 transition"
+                    className="flex-1 rounded bg-[#253900] px-6 py-3 text-white transition hover:bg-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2"
                   >
                     Add to Cart
                   </button>
                   <button
-                    onClick={(e) => {
-                      handleAddToWishlist(modalProduct.id, e);
-                    }}
-                    className="p-3 text-[#000000] hover:text-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2 rounded-full transition"
+                    type="button"
+                    onClick={(event) => handleAddToWishlist(modalProduct, event)}
+                    className="rounded-full p-3 text-[#000000] transition hover:text-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2"
                     aria-label="Add to wishlist"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </button>
@@ -371,6 +376,6 @@ const Bestsellers = () => {
       </div>
     </section>
   );
-}
+};
 
 export default Bestsellers;
