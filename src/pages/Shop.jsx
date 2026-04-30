@@ -13,6 +13,7 @@ export default function Shop() {
   const filter = searchParams.get('filter');
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewArrivals, setIsNewArrivals] = useState(false);
+  const [, setCartCount] = useState(0);
   const { getProductsByCategory } = useProducts();
   const [selectedCategory, setSelectedCategory] = useState('All');
   // Update filter state when URL changes

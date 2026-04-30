@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
 import { useProducts } from '../hooks/useProducts';
-
+import ProductCard from './ProductCard'; 
 const Bestsellers = () => {
   const carouselRef = useRef(null);
   const modalRef = useRef(null);
@@ -181,71 +181,15 @@ const Bestsellers = () => {
           onTouchEnd={onTouchEnd}
           className="flex space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 scrollbar-hide"
         >
-          {bestsellerList.map((product) => (
-            <article
-              key={product.id}
-              onClick={() => openModal(product)}
-              className="group min-w-[250px] sm:min-w-[280px] lg:min-w-[calc((100%-4.5rem)/4)] snap-start overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
-            >
-              <div className="relative aspect-square overflow-hidden bg-[#F5F5F5]">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-                {product.onSale && (
-                  <span className="absolute left-3 top-3 rounded-full bg-[#08CB00] px-3 py-1 text-xs font-semibold text-white">
-                    Sale
-                  </span>
-                )}
-              </div>
-
-              <div className="p-4">
-                <div className="mb-2 flex items-center gap-1 text-yellow-500">
-                  {[...Array(5)].map((_, index) => (
-                    <FiStar
-                      key={index}
-                      className={index < Math.round(product.rating) ? 'fill-current' : 'text-gray-300'}
-                    />
-                  ))}
-                </div>
-
-                <h3 className="text-lg font-semibold text-[#253900]">{product.name}</h3>
-                <p className="mt-1 text-sm text-gray-600">{product.description}</p>
-
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-[#253900]">
-                      ${product.onSale ? product.salePrice : product.price}
-                    </span>
-                    {product.onSale && (
-                      <span className="text-sm text-gray-500 line-through">${product.price}</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(event) => handleAddToCart(product, event)}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#253900] transition-colors hover:bg-[#253900] hover:text-white"
-                      aria-label={`Add ${product.name} to cart`}
-                    >
-                      <FiShoppingCart />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(event) => handleAddToWishlist(product, event)}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#253900] transition-colors hover:bg-[#08CB00] hover:text-white"
-                      aria-label={`Add ${product.name} to wishlist`}
-                    >
-                      <FiHeart />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
+        {bestsellerList.map((p) => (
+        <ProductCard 
+            key={p.id}
+            product={p}
+            onAddToCart={handleAddToCart}
+            onAddToWishlist={handleAddToWishlist}
+            onQuickView={openModal}
+        />
+        ))}
 
           {!bestsellerList.length && (
             <div className="w-full rounded-2xl border border-dashed border-black/20 p-10 text-center text-gray-600">
