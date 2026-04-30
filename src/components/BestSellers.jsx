@@ -20,16 +20,25 @@ const Bestsellers = () => {
 
 
 const {
-    carouselRef,
-    currentIndex,
-    setCurrentIndex,
-    handlePrev,
-    handleNext,
-    onTouchStart,
-    onTouchEnd,
-    totalWeight
+  carouselRef,
+  currentIndex,
+  setCurrentIndex,
+  handlePrev,
+  handleNext,
+  onTouchStart,
+  onTouchEnd,
+  pageCount,
+  onScroll
 } = useCarousel(bestsellerList.length);
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setModalProduct(null);
+    document.body.style.overflow = '';
 
+    if (lastFocusedElement.current && typeof lastFocusedElement.current.focus === 'function') {
+      lastFocusedElement.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -62,7 +71,7 @@ const {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen]);
+  }, [isModalOpen, closeModal]);
 
   useEffect(() => {
     return () => {
@@ -77,16 +86,6 @@ const {
     setModalProduct(product);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
-    setModalProduct(null);
-    document.body.style.overflow = '';
-
-    if (lastFocusedElement.current && typeof lastFocusedElement.current.focus === 'function') {
-      lastFocusedElement.current.focus();
-    }
   }, []);
 
   const handleAddToCart = useCallback(
@@ -128,14 +127,20 @@ const {
     </div>
 
 <div className="relative">
-        <button onClick={handlePrev} disabled={currentIndex === 0} className="...">
-          {/* Left Arrow Icon */}
+        <button
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+          aria-label="Previous"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-[#EEEEEE] p-2 shadow hover:bg-[#08CB00] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <FiChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
 
         <div
           ref={carouselRef}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
+          onScroll={onScroll}
           className="flex space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 scrollbar-hide"
         >
           {bestsellerList.map((p) => (
@@ -149,17 +154,23 @@ const {
           ))}
         </div>
 
-        <button onClick={handleNext} disabled={currentIndex === totalWeight - 1} className="...">
-          {/* Right Arrow Icon */}
+        <button
+          onClick={handleNext}
+          disabled={currentIndex >= pageCount - 1}
+          aria-label="Next"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-[#EEEEEE] p-2 shadow hover:bg-[#08CB00] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <FiChevronRight className="h-5 w-5 text-gray-600" />
         </button>
       </div>
 
         <div className="flex justify-center space-x-2 mt-4">
-                {Array.from({ length: totalWeight }).map((_, i) => (
+                {Array.from({ length: pageCount }).map((_, i) => (
                 <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-[#000000]'}`}
+                    className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-black/30'}`}
+                    aria-label={`Go to page ${i + 1}`}
                 />
                 ))}
         </div>

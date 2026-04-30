@@ -23,9 +23,11 @@ export const useCarousel = (itemCount) => {
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
-    const scrollAmount = el.clientWidth * currentIndex;
+    // compute page width (container width divided by visible items)
+    const pageWidth = el.clientWidth / Math.max(1, itemsPerPage);
+    const scrollAmount = pageWidth * currentIndex;
     el.scrollTo({ left: scrollAmount, behavior: 'smooth' });
-  }, [currentIndex]);
+  }, [currentIndex, itemsPerPage]);
 
   const handlePrev = useCallback(() => {
     setCurrentIndex((i) => Math.max(i - 1, 0));
@@ -47,6 +49,14 @@ export const useCarousel = (itemCount) => {
     if (diff < -50) handlePrev();
   }, [handleNext, handlePrev, touchStartX]);
 
+  const onScroll = useCallback(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const pageWidth = el.clientWidth / Math.max(1, itemsPerPage);
+    const index = Math.round(el.scrollLeft / pageWidth);
+    setCurrentIndex(Math.max(0, Math.min(index, Math.ceil(itemCount / itemsPerPage) - 1)));
+  }, [itemsPerPage, itemCount]);
+
   return {
     carouselRef,
     currentIndex,
@@ -56,6 +66,7 @@ export const useCarousel = (itemCount) => {
     handleNext,
     onTouchStart,
     onTouchEnd,
-    totalWeight: Math.ceil(itemCount / itemsPerPage)
+    pageCount: Math.ceil(itemCount / itemsPerPage),
+    onScroll
   };
 };

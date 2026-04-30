@@ -6,7 +6,7 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
 
   return (
     <div
-      className="group relative bg-[#EEEEEE] rounded-lg shadow-sm hover:shadow-lg transition p-4 snap-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#08CB00]"
+      className="group relative bg-[#EEEEEE] rounded-lg shadow-sm hover:shadow-lg transition p-4 snap-start cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#08CB00] flex-shrink-0 w-[240px] sm:w-[280px] md:w-[300px] lg:w-[320px]"
       onClick={() => onQuickView(product)}
     >
       {/* Badges */}
