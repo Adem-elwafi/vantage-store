@@ -4,38 +4,32 @@ import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
 import { useProducts } from '../hooks/useProducts';
+import { useCarousel } from '../hooks/useCarousel';
 import ProductCard from './ProductCard'; 
+
+
 const Bestsellers = () => {
-  const carouselRef = useRef(null);
   const modalRef = useRef(null);
   const lastFocusedElement = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [touchStartX, setTouchStartX] = useState(0);
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { getBestsellers } = useProducts();
   const bestsellerList = getBestsellers();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const updateLayout = () => {
-      const width = window.innerWidth;
-      if (width >= 1024) setItemsPerPage(4);
-      else if (width >= 640) setItemsPerPage(2);
-      else setItemsPerPage(1);
-    };
 
-    updateLayout();
-    window.addEventListener('resize', updateLayout);
-    return () => window.removeEventListener('resize', updateLayout);
-  }, []);
 
-  useEffect(() => {
-    const el = carouselRef.current;
-    if (!el) return;
-    el.scrollTo({ left: el.clientWidth * currentIndex, behavior: 'smooth' });
-  }, [currentIndex]);
+const {
+    carouselRef,
+    currentIndex,
+    setCurrentIndex,
+    handlePrev,
+    handleNext,
+    onTouchStart,
+    onTouchEnd,
+    totalWeight
+} = useCarousel(bestsellerList.length);
+
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -76,28 +70,7 @@ const Bestsellers = () => {
     };
   }, []);
 
-  const pageCount = Math.max(1, Math.ceil(bestsellerList.length / itemsPerPage));
 
-  const handlePrev = useCallback(() => {
-    setCurrentIndex((index) => Math.max(index - 1, 0));
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setCurrentIndex((index) => Math.min(index + 1, pageCount - 1));
-  }, [pageCount]);
-
-  const onTouchStart = useCallback((event) => {
-    setTouchStartX(event.touches[0].pageX);
-  }, []);
-
-  const onTouchEnd = useCallback(
-    (event) => {
-      const diff = touchStartX - event.changedTouches[0].pageX;
-      if (diff > 50) handleNext();
-      if (diff < -50) handlePrev();
-    },
-    [handleNext, handlePrev, touchStartX]
-  );
 
   const openModal = useCallback((product) => {
     lastFocusedElement.current = document.activeElement;
@@ -149,78 +122,47 @@ const Bestsellers = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">
-          Best Sellers
-        </h2>
-        <a href="/shop" className="text-sm text-[#08CB00] hover:underline">
-          View All
-        </a>
-      </div>
+    <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Best Sellers</h2>
+        <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
+    </div>
 
-      <div className="relative">
-        <button
-          type="button"
-          aria-label="Previous"
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#EEEEEE] p-2 shadow transition-colors hover:bg-[#08CB00] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <FiChevronLeft className="h-5 w-5 text-gray-600" />
+<div className="relative">
+        <button onClick={handlePrev} disabled={currentIndex === 0} className="...">
+          {/* Left Arrow Icon */}
         </button>
 
         <div
           ref={carouselRef}
-          onScroll={() => {
-            const el = carouselRef.current;
-            if (!el) return;
-            const nextIndex = Math.round(el.scrollLeft / el.clientWidth);
-            setCurrentIndex(Math.max(0, Math.min(nextIndex, pageCount - 1)));
-          }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
           className="flex space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 scrollbar-hide"
         >
-        {bestsellerList.map((p) => (
-        <ProductCard 
-            key={p.id}
-            product={p}
-            onAddToCart={handleAddToCart}
-            onAddToWishlist={handleAddToWishlist}
-            onQuickView={openModal}
-        />
-        ))}
-
-          {!bestsellerList.length && (
-            <div className="w-full rounded-2xl border border-dashed border-black/20 p-10 text-center text-gray-600">
-              No best sellers found.
-            </div>
-          )}
+          {bestsellerList.map((p) => (
+            <ProductCard 
+              key={p.id} 
+              product={p} 
+              onAddToCart={handleAddToCart}
+              onAddToWishlist={handleAddToWishlist}
+              onQuickView={openModal}
+            />
+          ))}
         </div>
 
-        <button
-          type="button"
-          aria-label="Next"
-          onClick={handleNext}
-          disabled={currentIndex >= pageCount - 1}
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#EEEEEE] p-2 shadow transition-colors hover:bg-[#08CB00] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <FiChevronRight className="h-5 w-5 text-gray-600" />
+        <button onClick={handleNext} disabled={currentIndex === totalWeight - 1} className="...">
+          {/* Right Arrow Icon */}
         </button>
       </div>
 
-      <div className="mt-4 flex justify-center space-x-2">
-        {Array.from({ length: pageCount }).map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => setCurrentIndex(index)}
-            className={`h-2.5 rounded-full transition-all ${currentIndex === index ? 'w-8 bg-[#08CB00]' : 'w-2.5 bg-black/20'}`}
-            aria-label={`Go to page ${index + 1}`}
-          />
-        ))}
-      </div>
-
+        <div className="flex justify-center space-x-2 mt-4">
+                {Array.from({ length: totalWeight }).map((_, i) => (
+                <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-[#000000]'}`}
+                />
+                ))}
+        </div>
       <div
         className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 transition-opacity duration-300 ${isModalOpen ? 'z-50 opacity-100' : 'pointer-events-none opacity-0'}`}
         role="dialog"
