@@ -89,42 +89,49 @@ const HomePage = () => {
         </div>
       </header>
 
-      <main className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <section aria-labelledby="categories-heading" className="text-center mb-16">
-            <h2 id="categories-heading" className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Find the perfect tech for your needs
-            </p>
+      <main>
+        {/* 1. Categories - Soft Gray Background */}
+        <section aria-labelledby="categories-heading" className="bg-[#f9f9f9] py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+            <h2 id="categories-heading" className="text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">Find the perfect tech for your needs</p>
             <Categories />
-          </section>
-          
-          <section id="bestsellers" aria-labelledby="bestsellers-heading" className="pt-16 -mt-12">
-            <h2 id="bestsellers-heading" className="text-3xl font-bold text-center mb-8">Best Sellers</h2>
+          </div>
+        </section>
+        
+        {/* 2. Bestsellers - Clean White Background */}
+        <section id="bestsellers" aria-labelledby="bestsellers-heading" className="bg-white py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 id="bestsellers-heading" className="text-4xl font-bold text-center mb-12 text-gray-900 uppercase tracking-tight">Best Sellers</h2>
             <Bestsellers />
-          </section>
-          
-          <section id="features" aria-labelledby="features-heading" className="mt-16 bg-[#253900] rounded-2xl p-8 shadow-xl">
-            <h2 id="features-heading" className="text-3xl font-bold text-center mb-8 text-[#EEEEEE]">Why Choose Us</h2>
+          </div>
+        </section>
+        
+        {/* 3. Features - Brand Dark Background */}
+        <section id="features" aria-labelledby="features-heading" className="bg-[#253900] py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 id="features-heading" className="text-3xl font-bold text-center mb-12 text-[#EEEEEE]">Why Choose Us</h2>
             <Features />
-          </section>
-          
-          <section id="gift-ideas" aria-labelledby="gift-ideas-heading" className="pt-16 -mt-12">
+          </div>
+        </section>
+        
+        {/* 4. Gift Ideas - Soft Gray Background */}
+        <section id="gift-ideas" aria-labelledby="gift-ideas-heading" className="bg-[#f9f9f9] py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 id="gift-ideas-heading" className="text-3xl font-bold text-[#000000] mb-3">Perfect Tech Gifts</h2>
+              <h2 id="gift-ideas-heading" className="text-4xl font-bold text-[#000000] mb-3 uppercase">Perfect Tech Gifts</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">Thoughtful tech gifts for every occasion and budget</p>
             </div>
             <GiftIdeas />
-          </section>
-          
-          <section aria-labelledby="newsletter-heading" className="mt-16 bg-[#08CB00] rounded-2xl p-8 shadow-xl overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#06b100] to-transparent -mr-8 -rotate-12 transform origin-left"></div>
-            <div className="relative z-10">
-              <h2 id="newsletter-heading" className="text-3xl font-bold text-center mb-8 text-[#000000]">Stay Updated</h2>
-              <Newsletter />
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
+        
+        {/* 5. Newsletter - Standardized Padding */}
+        <section aria-labelledby="newsletter-heading" className="bg-white py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Newsletter />
+          </div>
+        </section>
       </main>
     </div>
   );

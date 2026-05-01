@@ -75,9 +75,7 @@ export const useCarousel = (itemCount) => {
       lastActionRef.current = 'idle';
       try {
         el.style.scrollSnapType = prevSnap || 'x mandatory';
-      } catch {
-        // ignore
-      }
+      } catch {}
     }, 700);
   }, [currentIndex, itemsPerPage]);
 
@@ -133,10 +131,16 @@ export const useCarousel = (itemCount) => {
     setCurrentIndex(Math.max(0, Math.min(index, Math.ceil(itemCount / itemsPerPage) - 1)));
   }, [itemsPerPage, itemCount, currentIndex]);
 
+  const goToPage = useCallback((page) => {
+    lastActionRef.current = 'programmatic';
+    setCurrentIndex(() => page);
+  }, []);
+
   return {
     carouselRef,
     currentIndex,
     setCurrentIndex,
+    goToPage,
     itemsPerPage,
     handlePrev,
     handleNext,

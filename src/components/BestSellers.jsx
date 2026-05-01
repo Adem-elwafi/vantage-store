@@ -22,7 +22,7 @@ const Bestsellers = () => {
 const {
   carouselRef,
   currentIndex,
-  setCurrentIndex,
+  goToPage,
   handlePrev,
   handleNext,
   onTouchStart,
@@ -168,7 +168,7 @@ const {
                 {Array.from({ length: pageCount }).map((_, i) => (
                 <button
                     key={i}
-                    onClick={() => setCurrentIndex(i)}
+                    onClick={() => goToPage(i)}
                     className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-black/30'}`}
                     aria-label={`Go to page ${i + 1}`}
                 />
