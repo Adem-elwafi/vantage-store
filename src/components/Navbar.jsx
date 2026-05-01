@@ -1,10 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import logo from '../assets/logo.png';
 
 const NAV_LINKS = [
   { label: "Home", path: "/" },
+  {
+    label: "Categories",
+    path: "#categories",
+    isAnchor: true
+  },
   { label: "Shop", path: "/shop" },
   { 
     label: "Best Sellers", 
@@ -61,19 +66,32 @@ export default function Navbar() {
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
   const wishlistCount = useSelector((state) => state.wishlist.items.length);
 
+  const scrollToSection = (targetId, remainingTries = 24) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    if (remainingTries <= 0) return;
+
+    window.requestAnimationFrame(() => {
+      scrollToSection(targetId, remainingTries - 1);
+    });
+  };
+
   // Smooth Scroll Logic
   const handleAnchorClick = (e, id) => {
     e.preventDefault();
     setMobileMenuOpen(false);
-    const element = document.getElementById(id.replace('#', ''));
+    const targetId = id.replace('#', '');
+    const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       // If not on home page, navigate home first
       navigate('/');
-      setTimeout(() => {
-        document.getElementById(id.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setTimeout(() => scrollToSection(targetId), 0);
     }
   };
 

@@ -13,6 +13,17 @@ const heroBackgroundImage = {
 };
 
 const HomePage = () => {
+  const handleBrowseCategoriesClick = (event) => {
+    event.preventDefault();
+    const section = document.getElementById('categories');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    window.location.hash = 'categories';
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -80,9 +91,13 @@ const HomePage = () => {
                   />
                 </Link>
 
-                <Link to="/categories" className="text-sm font-semibold leading-6 text-white hover:text-gray-200">
+                <a
+                  href="#categories"
+                  onClick={handleBrowseCategoriesClick}
+                  className="text-sm font-semibold leading-6 text-white hover:text-gray-200"
+                >
                   Browse categories <span aria-hidden="true">→</span>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -91,7 +106,7 @@ const HomePage = () => {
 
       <main>
         {/* 1. Categories - Soft Gray Background */}
-        <section aria-labelledby="categories-heading" className="bg-[#f9f9f9] py-20">
+        <section id="categories" aria-labelledby="categories-heading" className="scroll-mt-24 bg-[#f9f9f9] py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <h2 id="categories-heading" className="text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">Find the perfect tech for your needs</p>
