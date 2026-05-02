@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FiStar, FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToWishlist, removeFromWishlist } from '../features/wishlist/wishlistSlice';
@@ -6,6 +6,7 @@ import { addToWishlist, removeFromWishlist } from '../features/wishlist/wishlist
 const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => {
   const { name, price, salePrice, onSale, image, rating, isNew } = product;
   const dispatch = useDispatch();
+  const [isAdded, setIsAdded] = useState(false);
   
   // Check if product is already in wishlist
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -31,6 +32,13 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
     // Also call the callback if provided
     onAddToWishlist?.(product, e);
   }, [isFavorite, product, dispatch, onAddToWishlist]);
+
+  const handleAddToCart = useCallback((e) => {
+    e.stopPropagation();
+    setIsAdded(true);
+    onAddToCart(product, e);
+    setTimeout(() => setIsAdded(false), 2000);
+  }, [product, onAddToCart]);
 
   return (
     <div
@@ -99,13 +107,14 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
       {/* Actions */}
       <div className="mt-4 flex space-x-2">
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToCart(product, e);
-          }}
-          className="flex-1 bg-[#253900] text-white py-2 rounded flex items-center justify-center gap-2 hover:bg-[#08CB00] hover:scale-105 transition-transform duration-200 cursor-pointer"
+          onClick={handleAddToCart}
+          className={`flex-1 py-2 rounded flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer font-medium ${
+            isAdded
+              ? 'bg-[#0a6d1f] text-white hover:bg-[#0a6d1f]'
+              : 'bg-[#253900] text-white hover:bg-[#08CB00] hover:scale-105 transform'
+          }`}
         >
-          <FiShoppingCart /> Add
+          <FiShoppingCart /> {isAdded ? 'Added! ✓' : 'Add'}
         </button>
         <button
           onClick={(e) => {

@@ -83,7 +83,7 @@ const Wishlist = () => {
                 />
                 <button
                   onClick={() => handleRemoveItem(item.id)}
-                  className="absolute top-2 right-2 p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors z-10"
+                  className="absolute top-2 right-2 p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors z-10 cursor-pointer"
                   aria-label="Remove from wishlist"
                 >
                   <FiTrash2 className="w-5 h-5" />
@@ -98,7 +98,7 @@ const Wishlist = () => {
                 {/* Actions */}
                 <button
                   onClick={() => handleAddToCart(item)}
-                  className="w-full flex items-center justify-center gap-2 bg-[#253900] text-white py-2 rounded-lg hover:bg-[#08CB00] transition-colors hover:scale-105 transform duration-200 mt-auto cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 bg-[#253900] text-white py-2 rounded-lg hover:bg-[#08CB00] hover:scale-105 transition-all duration-200 mt-auto cursor-pointer font-medium"
                 >
                   <FiShoppingCart className="w-4 h-4" />
                   Add to Cart
@@ -112,7 +112,7 @@ const Wishlist = () => {
         <div className="mt-12 text-center">
           <Link
             to="/shop"
-            className="inline-block px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+            className="inline-block px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition-colors font-semibold cursor-pointer"
           >
             Continue Shopping
           </Link>

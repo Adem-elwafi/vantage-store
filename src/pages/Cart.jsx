@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FiTrash2, FiPlus, FiMinus } from 'react-icons/fi';
-import { removeItemFromCart } from '../features/cart/cartSlice';
+import { removeItemFromCart, updateQuantity } from '../features/cart/cartSlice';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,10 @@ const Cart = () => {
 
   const handleRemoveItem = (itemId) => {
     dispatch(removeItemFromCart(itemId));
+  };
+
+  const handleUpdateQuantity = (itemId, change) => {
+    dispatch(updateQuantity({ id: itemId, change }));
   };
 
   if (!cartItems || cartItems.length === 0) {
@@ -68,19 +72,25 @@ const Cart = () => {
                   {/* Quantity & Remove */}
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-gray-300 rounded">
-                      <button className="p-2 text-gray-600 hover:text-gray-900">
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, -1)}
+                        className="p-2 text-gray-600 hover:text-gray-900 cursor-pointer transition"
+                      >
                         <FiMinus className="w-4 h-4" />
                       </button>
                       <span className="px-4 py-2 font-semibold text-gray-900">
                         {item.quantity}
                       </span>
-                      <button className="p-2 text-gray-600 hover:text-gray-900">
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, 1)}
+                        className="p-2 text-gray-600 hover:text-gray-900 cursor-pointer transition"
+                      >
                         <FiPlus className="w-4 h-4" />
                       </button>
                     </div>
                     <button
                       onClick={() => handleRemoveItem(item.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded transition"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
                       aria-label="Remove item"
                     >
                       <FiTrash2 className="w-5 h-5" />
@@ -118,7 +128,7 @@ const Cart = () => {
                 </span>
               </div>
 
-              <button className="w-full bg-[#253900] text-white py-3 rounded-lg font-semibold hover:bg-[#08CB00] transition-colors mb-3">
+              <button className="w-full bg-[#253900] text-white py-3 rounded-lg font-semibold hover:bg-[#08CB00] hover:shadow-lg transition-all cursor-pointer mb-3">
                 Proceed to Checkout
               </button>
               <Link

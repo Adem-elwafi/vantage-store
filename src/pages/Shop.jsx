@@ -83,7 +83,7 @@ export default function Shop() {
             />
           </div>
           <select
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#08CB00] cursor-pointer"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#08CB00] cursor-pointer outline-none"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -117,7 +117,11 @@ export default function Shop() {
       {isModalOpen && modalProduct && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" onClick={closeModal}>
           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative" onClick={e => e.stopPropagation()}>
-            <button onClick={closeModal} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full z-10 cursor-pointer">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full z-10 cursor-pointer transition-colors"
+              aria-label="Close modal"
+            >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             <div className="p-8 md:flex gap-8">
