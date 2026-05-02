@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FiStar, FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
+import { useSelector, useDispatch } from 'react-redux';
+import { addToWishlist, removeFromWishlist } from '../features/wishlist/wishlistSlice';
 
 const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => {
   const { name, price, salePrice, onSale, image, rating, isNew } = product;
+  const dispatch = useDispatch();
+  
+  // Check if product is already in wishlist
+  const wishlistItems = useSelector((state) => state.wishlist.items);
+  const isFavorite = wishlistItems.some(item => item.id === product.id);
+
+  const handleWishlistClick = useCallback((e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (isFavorite) {
+      // Remove from wishlist
+      dispatch(removeFromWishlist(product.id));
+    } else {
+      // Add to wishlist
+      dispatch(addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.onSale ? product.salePrice : product.price,
+        image: product.image,
+      }));
+    }
+    
+    // Also call the callback if provided
+    onAddToWishlist?.(product, e);
+  }, [isFavorite, product, dispatch, onAddToWishlist]);
 
   return (
     <div
@@ -25,12 +53,13 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
 
       {/* Wishlist Toggle */}
       <button
-        className="absolute top-2 right-2 text-[#000000] hover:text-[#08CB00] transition-transform duration-200 hover:scale-105 z-20 p-1 bg-white/50 rounded-full cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAddToWishlist(product, e);
-        }}
-        aria-label="Add to wishlist"
+        className={`absolute top-2 right-2 transition-all duration-200 hover:scale-105 z-20 p-1 bg-white/50 rounded-full cursor-pointer ${
+          isFavorite
+            ? 'text-red-500 fill-red-500'
+            : 'text-[#000000] hover:text-[#08CB00]'
+        }`}
+        onClick={handleWishlistClick}
+        aria-label={isFavorite ? 'Remove from wishlist' : 'Add to wishlist'}
       >
         <FiHeart className="w-5 h-5" />
       </button>

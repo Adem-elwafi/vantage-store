@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         {/* Dynamic route for categories */}
         <Route path="/category/:slug" element={<Shop />} />
       </Routes>
