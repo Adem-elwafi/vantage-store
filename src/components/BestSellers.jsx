@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { FiStar, FiShoppingCart, FiHeart, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
@@ -22,7 +22,7 @@ const Bestsellers = () => {
 const {
   carouselRef,
   currentIndex,
-  goToPage,
+  setCurrentIndex,
   handlePrev,
   handleNext,
   onTouchStart,
@@ -168,14 +168,15 @@ const {
                 {Array.from({ length: pageCount }).map((_, i) => (
                 <button
                     key={i}
-                    onClick={() => goToPage(i)}
+                    onClick={() => setCurrentIndex(i)}
                     className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-black/30'}`}
                     aria-label={`Go to page ${i + 1}`}
                 />
                 ))}
         </div>
+
       <div
-        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 transition-opacity duration-300 ${isModalOpen ? 'z-50 opacity-100' : 'pointer-events-none opacity-0'}`}
+        className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm transition-opacity duration-300 ${isModalOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -184,88 +185,52 @@ const {
         {modalProduct && (
           <div
             ref={modalRef}
-            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-[#EEEEEE] transform transition-all"
+            className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="sticky top-0 flex items-center justify-between border-b border-[#000000] bg-[#EEEEEE] p-4">
-              <h2 id="modal-title" className="text-2xl font-semibold">
-                {modalProduct.name}
-              </h2>
-              <button
-                type="button"
-                aria-label="Close modal"
-                onClick={closeModal}
-                className="rounded-full p-1 text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 hover:text-gray-700"
-                autoFocus
-              >
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <button
+              type="button"
+              aria-label="Close modal"
+              onClick={closeModal}
+              className="absolute right-4 top-4 z-10 rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              autoFocus
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-            <div className="gap-6 p-6 md:flex">
-              <div className="mb-6 md:mb-0 md:w-1/2">
+            <div className="gap-8 p-8 md:flex">
+              <div className="md:w-1/2">
                 <img
                   src={modalProduct.image}
                   alt={modalProduct.name}
-                  className="h-64 w-full rounded-lg object-cover md:h-80"
+                  className="w-full rounded-xl bg-gray-50 object-contain"
                   loading="lazy"
                 />
               </div>
 
-              <div className="md:w-1/2">
-                <div className="mb-4">
-                  <div className="mb-2 flex items-center">
-                    <div className="mr-2 flex items-center">
-                      {[...Array(5)].map((_, index) => (
-                        <svg
-                          key={index}
-                          className={`h-5 w-5 ${index < modalProduct.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">{modalProduct.rating}/5.0</span>
-                  </div>
-
-                  <div className="mb-4 text-2xl font-bold text-gray-900">
-                    ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
-                    {modalProduct.onSale && (
-                      <span className="ml-2 text-sm text-gray-500 line-through">
-                        ${modalProduct.price}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
+              <div className="md:w-1/2 flex flex-col justify-center">
+                <h2 id="modal-title" className="mb-4 text-3xl font-bold text-gray-900">{modalProduct.name}</h2>
                 <p className="mb-6 text-gray-700">{modalProduct.description}</p>
 
-                <div className="flex space-x-4">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      handleAddToCart(modalProduct, event);
-                      closeModal();
-                    }}
-                    className="flex-1 rounded bg-[#253900] px-6 py-3 text-white transition hover:bg-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2"
-                  >
-                    Add to Cart
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => handleAddToWishlist(modalProduct, event)}
-                    className="rounded-full p-3 text-[#000000] transition hover:text-[#08CB00] focus:outline-none focus:ring-2 focus:ring-[#08CB00] focus:ring-offset-2"
-                    aria-label="Add to wishlist"
-                  >
-                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
+                <div className="mb-8 text-2xl font-bold text-[#08CB00]">
+                  ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
+                  {modalProduct.onSale && (
+                    <span className="ml-3 text-base font-medium text-gray-500 line-through">${modalProduct.price}</span>
+                  )}
                 </div>
+
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    handleAddToCart(modalProduct, event);
+                    closeModal();
+                  }}
+                  className="w-full rounded-xl bg-[#253900] py-4 font-bold text-white transition-colors hover:bg-[#08CB00]"
+                >
+                  Add to Cart
+                </button>
               </div>
             </div>
           </div>

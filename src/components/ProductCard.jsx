@@ -2,7 +2,7 @@ import React from 'react';
 import { FiStar, FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
 
 const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => {
-  const {  name, price, salePrice, onSale, image, rating, isNew } = product;
+  const { name, price, salePrice, onSale, image, rating, isNew } = product;
 
   return (
     <div
@@ -24,11 +24,11 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
       </div>
 
       {/* Wishlist Toggle */}
-      <button 
-        className="absolute top-2 right-2 text-[#000000] hover:text-[#08CB00] transition z-20 p-1 bg-white/50 rounded-full"
+      <button
+        className="absolute top-2 right-2 text-[#000000] hover:text-[#08CB00] transition-transform duration-200 hover:scale-105 z-20 p-1 bg-white/50 rounded-full cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
-          onAddToWishlist(product);
+          onAddToWishlist(product, e);
         }}
         aria-label="Add to wishlist"
       >
@@ -72,9 +72,9 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onAddToCart(product);
+            onAddToCart(product, e);
           }}
-          className="flex-1 bg-[#253900] text-white py-2 rounded flex items-center justify-center gap-2 hover:bg-[#08CB00] transition"
+          className="flex-1 bg-[#253900] text-white py-2 rounded flex items-center justify-center gap-2 hover:bg-[#08CB00] hover:scale-105 transition-transform duration-200 cursor-pointer"
         >
           <FiShoppingCart /> Add
         </button>
@@ -83,7 +83,7 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
             e.stopPropagation();
             onQuickView(product);
           }}
-          className="bg-white text-[#000000] border border-gray-200 py-2 px-3 rounded hover:bg-gray-100 transition"
+          className="bg-white text-[#000000] border border-gray-200 py-2 px-3 rounded hover:bg-gray-100 hover:scale-105 transition-transform duration-200 cursor-pointer"
           aria-label="Quick view"
         >
           <FiEye />
