@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
@@ -9,8 +9,25 @@ import ProductCard from '../components/ProductCard';
 
 const categories = ['All', 'Laptops', 'Smartphones', 'Headphones', 'Smartwatches'];
 
+const categoryAliasMap = {
+  'Laptops & PCs': 'Laptops',
+  Audio: 'Headphones',
+  Wearables: 'Smartwatches',
+};
+
+const slugCategoryMap = {
+  'laptops-pcs': 'Laptops',
+  smartphones: 'Smartphones',
+  gaming: 'Gaming',
+  audio: 'Headphones',
+  wearables: 'Smartwatches',
+};
+
+const resolveCategory = (value) => categoryAliasMap[value] ?? value;
+
 export default function Shop() {
   const { slug } = useParams(); 
+  const [searchParams] = useSearchParams();
   const { getProductsByCategory } = useProducts(); 
   const dispatch = useDispatch();
   
@@ -21,24 +38,23 @@ export default function Shop() {
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (slug) {
-      const categoryMap = {
-        'laptops-pcs': 'Laptops',
-        'smartphones': 'Smartphones',
-        'gaming': 'Gaming',
-        'audio': 'Headphones',
-        'wearables': 'Smartwatches'
-      };
-      setSelectedCategory(categoryMap[slug] || 'All');
-    }
-  }, [slug]);
+  const urlSearch = searchParams.get('search') ?? '';
+  const urlCategory = searchParams.get('cat') ?? '';
 
-  const categoryProducts = getProductsByCategory(selectedCategory);
+  useEffect(() => {
+    const nextCategory = resolveCategory(urlCategory || slugCategoryMap[slug] || 'All');
+    setSearchTerm(urlSearch);
+    setSelectedCategory(nextCategory);
+  }, [slug, urlCategory, urlSearch]);
+
+  const activeCategory = resolveCategory(selectedCategory);
+  const categoryProducts = getProductsByCategory(activeCategory);
 
   const filteredProducts = categoryProducts.filter(product => {
-    return searchTerm === '' || 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = searchTerm === '' || product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
+
+    return matchesSearch && matchesCategory;
   });
 
   // Action Handlers

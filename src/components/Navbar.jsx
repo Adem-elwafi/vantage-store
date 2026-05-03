@@ -43,13 +43,13 @@ function NavDropdown({ items }) {
   return (
     <div className="absolute top-full left-0 bg-white border border-gray-200 rounded-md shadow-xl min-w-48 z-50 overflow-hidden hidden group-hover:block">
       {items.map((item) => (
-        <a
+        <Link
           key={item}
-          href="#"
+          to={`/shop?cat=${encodeURIComponent(item)}`}
           className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#08CB00] transition-colors cursor-pointer"
         >
           {item}
-        </a>
+        </Link>
       ))}
     </div>
   );
@@ -65,6 +65,16 @@ export default function Navbar() {
   // Redux State Connectivity
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
   const wishlistCount = useSelector((state) => state.wishlist.items.length);
+
+  const handleSearchNavigate = () => {
+    navigate(`/shop?search=${encodeURIComponent(searchQuery)}&cat=${encodeURIComponent(searchCategory)}`);
+  };
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    handleSearchNavigate();
+  };
 
   const scrollToSection = (targetId, remainingTries = 24) => {
     const element = document.getElementById(targetId);
@@ -145,11 +155,16 @@ export default function Navbar() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Search for laptops, phones, accessories..."
                 className="flex-1 h-11 bg-transparent px-4 text-sm text-gray-800 placeholder-gray-400 outline-none"
               />
 
-              <button className="h-11 w-12 bg-[#253900] hover:bg-[#08CB00] text-white flex items-center justify-center transition-colors cursor-pointer">
+              <button
+                type="button"
+                onClick={handleSearchNavigate}
+                className="h-11 w-12 bg-[#253900] hover:bg-[#08CB00] text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
                 </svg>

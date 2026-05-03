@@ -120,7 +120,7 @@ const {
   );
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
+    <section className="max-w-8xl mx-auto px-4 py-12">
     <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Best Sellers</h2>
         <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
