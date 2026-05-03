@@ -4,9 +4,19 @@ import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
 import { useProducts } from '../hooks/useProducts';
-import { useCarousel } from '../hooks/useCarousel';
 import ProductCard from './ProductCard'; 
 
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+
+
+// import required modules
+import { EffectCoverflow, Pagination } from 'swiper/modules';
 
 const Bestsellers = () => {
   const modalRef = useRef(null);
@@ -18,18 +28,6 @@ const Bestsellers = () => {
   const dispatch = useDispatch();
 
 
-
-const {
-  carouselRef,
-  currentIndex,
-  setCurrentIndex,
-  handlePrev,
-  handleNext,
-  onTouchStart,
-  onTouchEnd,
-  pageCount,
-  onScroll
-} = useCarousel(bestsellerList.length);
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setModalProduct(null);
@@ -120,30 +118,33 @@ const {
   );
 
   return (
-    <section className="max-w-8xl mx-auto px-4 py-12">
-    <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Best Sellers</h2>
-        <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
-    </div>
-
-<div className="relative">
-        <button
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-          aria-label="Previous"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-[#EEEEEE] p-2 shadow hover:bg-[#08CB00] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FiChevronLeft className="h-5 w-5 text-gray-600" />
-        </button>
-
-        <div
-          ref={carouselRef}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-          onScroll={onScroll}
-          className="flex space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 scrollbar-hide"
-        >
-          {bestsellerList.map((p) => (
+    <section className="max-w-8xl mx-auto px-4 py-16">
+  <div className="flex justify-between items-center mb-6 relative z-10 text-black">
+      <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Best Sellers</h2>
+      <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
+  </div>
+<div className="relative z-0 overflow-hidden">
+  
+<Swiper
+        effect={'coverflow'}
+        grabCursor={true}
+        centeredSlides={true}
+        slidesPerView={'auto'}
+        coverflowEffect={{
+          rotate: 50,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        }}
+        style={{ paddingTop: '20px', paddingBottom: '50px' }} 
+        pagination={true}
+        modules={[EffectCoverflow, Pagination]}
+        className="mySwiper"
+      >
+        
+                   {bestsellerList.map((p,index) => (
+                <SwiperSlide key={`bestseller-${p.id}-${index}`} style={{ width: 'auto' }}>
             <ProductCard 
               key={p.id} 
               product={p} 
@@ -151,29 +152,13 @@ const {
               onAddToWishlist={handleAddToWishlist}
               onQuickView={openModal}
             />
+            </SwiperSlide>
           ))}
-        </div>
+        
+        
+      </Swiper>
 
-        <button
-          onClick={handleNext}
-          disabled={currentIndex >= pageCount - 1}
-          aria-label="Next"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-[#EEEEEE] p-2 shadow hover:bg-[#08CB00] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FiChevronRight className="h-5 w-5 text-gray-600" />
-        </button>
-      </div>
-
-        <div className="flex justify-center space-x-2 mt-4">
-                {Array.from({ length: pageCount }).map((_, i) => (
-                <button
-                    key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    className={`w-3 h-3 rounded-full ${i === currentIndex ? 'bg-[#08CB00]' : 'bg-black/30'}`}
-                    aria-label={`Go to page ${i + 1}`}
-                />
-                ))}
-        </div>
+  </div>
 
       <div
         className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm transition-opacity duration-300 ${isModalOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
