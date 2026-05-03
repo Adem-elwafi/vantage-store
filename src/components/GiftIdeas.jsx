@@ -1,34 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { FiShoppingCart, FiHeart, FiEye, FiStar } from 'react-icons/fi';
+import { useProducts } from '../hooks/useProducts';
 
-const GiftIdeas = ({ products = [], toggleCart = () => {}, toggleWishlist = () => {} }) => {
-  // Safely get gift ideas or first 4 products
-  const getSafeProducts = () => {
-    try {
-      if (!Array.isArray(products) || products.length === 0) return [];
-      
-      const validProducts = products.filter(product => 
-        product && 
-        typeof product === 'object' && 
-        product.id && 
-        product.title
-      );
-      
-      if (validProducts.length === 0) return [];
-      
-      const giftIdeas = validProducts.filter(p => p.giftIdea);
-      return giftIdeas.length > 0 ? giftIdeas : validProducts.slice(0, 4);
-    } catch (error) {
-      console.error('Error processing products:', error);
-      return [];
-    }
-  };
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Mousewheel, Autoplay } from 'swiper/modules';
 
-  const giftIdeas = getSafeProducts();
+const GiftIdeas = () => {
+  const { getGiftIdeas } = useProducts();
+  const giftIdeas = getGiftIdeas();
 
-  if (!giftIdeas || giftIdeas.length === 0) {
+
+
+
+
+  if (!giftIdeas.length) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No gift ideas available at the moment. Check back soon!</p>
@@ -38,39 +22,48 @@ const GiftIdeas = ({ products = [], toggleCart = () => {}, toggleWishlist = () =
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-// Inside GiftIdeas.jsx
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-  {giftIdeas.map((product) => (
-    <ProductCard 
-      key={product.id}
-      product={product}
-      onAddToCart={() => toggleCart(product.id)}
-      onAddToWishlist={() => toggleWishlist(product.id)}
-      onQuickView={() => {/* handle quick view */}}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Gift Ideas</h2>
+        <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
+      </div>
+<Swiper
+  effect={'cube'}
+  grabCursor={true}
+  mousewheel={true}
+  autoplay={{ delay: 3000, disableOnInteraction: false }}
+  pagination={{ clickable: true }}
+  modules={[Pagination, Mousewheel,Autoplay]}
+  style={{ paddingBottom: '40px', width: '400px' }}
+>
+  {giftIdeas.map((product, index) => (
+<SwiperSlide key={`gift-${product.id}-${index}`}>
+  <div className="rounded-2xl overflow-hidden shadow-md bg-white">
+    <img
+      src={product.image}
+      alt={product.name}
+      className="w-full h-56 object-cover"
     />
+    <div className="p-4 flex flex-col gap-2">
+      <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+      <p className="text-[#08CB00] font-bold text-xl">
+        ${product.onSale ? product.salePrice : product.price}
+        {product.onSale && (
+          <span className="ml-2 text-sm text-gray-400 line-through">${product.price}</span>
+        )}
+      </p>
+      <a
+        href={`/shop/${product.id}`}
+        className="mt-2 text-center w-full py-2 rounded-xl border-2 border-[#253900] text-[#253900] font-semibold text-sm hover:bg-[#253900] hover:text-white transition-colors"
+      >
+        View Gift 🎁
+      </a>
+    </div>
+  </div>
+</SwiperSlide>
   ))}
-</div>
+</Swiper>
     </div>
   );
-};
-
-GiftIdeas.propTypes = {
-  products: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      title: PropTypes.string,
-      price: PropTypes.number,
-      salePrice: PropTypes.number,
-      onSale: PropTypes.bool,
-      bestseller: PropTypes.bool,
-      rating: PropTypes.number,
-      image: PropTypes.string,
-      description: PropTypes.string,
-      giftIdea: PropTypes.bool
-    })
-  ),
-  cartItems: PropTypes.array,
-  toggleCart: PropTypes.func
 };
 
 export default GiftIdeas;

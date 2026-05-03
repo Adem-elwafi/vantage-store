@@ -106,7 +106,7 @@ const HomePage = () => {
 
       <main>
         {/* 1. Categories - Soft Gray Background */}
-        <section id="categories" aria-labelledby="categories-heading" className="scroll-mt-24 bg-[#f9f9f9] py-20">
+        <section id="categories" aria-labelledby="categories-heading" className="scroll-mt-24 bg-[var(--color-background)] py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
             <h2 id="categories-heading" className="text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">Find the perfect tech for your needs</p>
@@ -123,15 +123,15 @@ const HomePage = () => {
         </section>
         
         {/* 3. Features - Brand Dark Background */}
-        <section id="features" aria-labelledby="features-heading" className="bg-[#253900] py-24">
+        <section id="features" aria-labelledby="features-heading" className="bg-[var(--color-primary)] py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 id="features-heading" className="text-3xl font-bold text-center mb-12 text-[#EEEEEE]">Why Choose Us</h2>
+            <h2 id="features-heading" className="text-3xl font-bold text-center mb-12 text-white">Why Choose Us</h2>
             <Features />
           </div>
         </section>
         
         {/* 4. Gift Ideas - Soft Gray Background */}
-        <section id="gift-ideas" aria-labelledby="gift-ideas-heading" className="bg-[#f9f9f9] py-20">
+        <section id="gift-ideas" aria-labelledby="gift-ideas-heading" className="bg-[var(--color-background)] py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 id="gift-ideas-heading" className="text-4xl font-bold text-[#000000] mb-3 uppercase">Perfect Tech Gifts</h2>

@@ -84,7 +84,7 @@ export default function Shop() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] pt-10">
+    <div className="min-h-screen bg-[var(--color-background)] text-[#1d1d1f] pt-10">
       <main className="container mx-auto px-4 py-8">
         {/* Search and Filter UI */}
         <div className="mb-8 flex flex-col md:flex-row gap-4">
@@ -93,13 +93,13 @@ export default function Shop() {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#08CB00]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#08CB00] cursor-pointer outline-none"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-secondary)] cursor-pointer outline-none"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -147,7 +147,7 @@ export default function Shop() {
               <div className="md:w-1/2 flex flex-col justify-center">
                 <h2 className="text-3xl font-bold mb-4">{modalProduct.name}</h2>
                 <p className="text-gray-600 mb-6">{modalProduct.description}</p>
-                <div className="text-2xl font-bold text-[#08CB00] mb-8">
+                <div className="text-2xl font-bold text-[var(--color-secondary)] mb-8">
                   ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
                   {modalProduct.onSale && (
                     <span className="ml-3 text-base font-medium text-gray-500 line-through">${modalProduct.price}</span>
@@ -155,7 +155,7 @@ export default function Shop() {
                 </div>
                 <button 
                   onClick={() => { handleAddToCart(modalProduct); closeModal(); }}
-                  className="w-full bg-[#253900] text-white py-4 rounded-xl font-bold hover:bg-[#08CB00] transition-colors cursor-pointer"
+                  className="w-full bg-[var(--color-primary)] text-white py-4 rounded-xl font-bold hover:bg-[var(--color-secondary)] transition-colors cursor-pointer"
                 >
                   Add to Cart
                 </button>

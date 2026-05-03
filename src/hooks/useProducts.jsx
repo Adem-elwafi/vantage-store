@@ -9,6 +9,7 @@ export const useProducts = () => {
     if (!category || category === 'All') return products;
     return products.filter(p => p.category === category);
   };
+  const getGiftIdeas = () => products.filter(p => p.giftIdea); 
 
   const getNewArrivals = () => products.filter(p => p.isNew);
 
@@ -16,6 +17,7 @@ export const useProducts = () => {
     getProducts, 
     getBestsellers, 
     getProductsByCategory, 
-    getNewArrivals 
+    getNewArrivals,
+    getGiftIdeas 
   };
 };

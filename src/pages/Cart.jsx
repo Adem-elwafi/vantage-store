@@ -29,7 +29,7 @@ const Cart = () => {
             <p className="text-gray-600 mb-6">Your cart is empty</p>
             <Link
               to="/shop"
-              className="inline-block px-6 py-3 bg-[#253900] text-white rounded-lg hover:bg-[#08CB00] transition-colors"
+              className="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition-colors"
             >
               Continue Shopping
             </Link>
@@ -123,17 +123,17 @@ const Cart = () => {
 
               <div className="flex justify-between text-xl font-bold text-gray-900 mb-6">
                 <span>Total</span>
-                <span className="text-[#08CB00]">
+                <span className="text-[var(--color-secondary)]">
                   ${(totalPrice + (totalPrice > 99 ? 0 : 9.99) + (totalPrice * 0.08)).toFixed(2)}
                 </span>
               </div>
 
-              <button className="w-full bg-[#253900] text-white py-3 rounded-lg font-semibold hover:bg-[#08CB00] hover:shadow-lg transition-all cursor-pointer mb-3">
+              <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-lg font-semibold hover:bg-[var(--color-secondary)] hover:shadow-lg transition-all cursor-pointer mb-3">
                 Proceed to Checkout
               </button>
               <Link
                 to="/shop"
-                className="block w-full text-center text-[#253900] py-3 border border-[#253900] rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                className="block w-full text-center text-[var(--color-primary)] py-3 border border-[var(--color-primary)] rounded-lg font-semibold hover:bg-gray-50 transition-colors"
               >
                 Continue Shopping
               </Link>

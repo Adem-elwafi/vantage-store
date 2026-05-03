@@ -8,12 +8,12 @@
   background: transparent;
 }
 .scrollbar-x::-webkit-scrollbar-thumb {
-  background: #253900;
+  background: var(--color-primary);
   border-radius: 999px;
   border: 2px solid transparent;
 }
 .scrollbar-x {
-  scrollbar-color: #253900 transparent;
+  scrollbar-color: var(--color-primary) transparent;
   scrollbar-width: thin;
 }
 

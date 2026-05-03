@@ -46,7 +46,7 @@ function NavDropdown({ items }) {
         <Link
           key={item}
           to={`/shop?cat=${encodeURIComponent(item)}`}
-          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#08CB00] transition-colors cursor-pointer"
+          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[var(--color-secondary)] transition-colors cursor-pointer"
         >
           {item}
         </Link>
@@ -115,7 +115,7 @@ export default function Navbar() {
           position: absolute;
           bottom: 0; left: 50%; right: 50%;
           height: 3px;
-          background: #08CB00;
+          background: var(--color-secondary);
           transition: left 0.2s, right 0.2s;
         }
         .nav-link-item:hover::after { left: 0; right: 0; }
@@ -140,7 +140,7 @@ export default function Navbar() {
             </Link>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xl ml-auto flex items-center bg-gray-50 rounded-lg border border-gray-200 focus-within:border-[#08CB00] overflow-hidden transition-all">
+            <div className="flex-1 max-w-xl ml-auto flex items-center bg-gray-50 rounded-lg border border-gray-200 focus-within:border-[var(--color-secondary)] overflow-hidden transition-all">
               <select
                 value={searchCategory}
                 onChange={(e) => setSearchCategory(e.target.value)}
@@ -163,7 +163,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={handleSearchNavigate}
-                className="h-11 w-12 bg-[#253900] hover:bg-[#08CB00] text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="h-11 w-12 bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
@@ -174,13 +174,13 @@ export default function Navbar() {
             {/* Right Icons */}
             <div className="flex items-center gap-1 ml-auto">
               {/* Wishlist */}
-              <Link to="/wishlist" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[#08CB00] transition-colors relative cursor-pointer">
+              <Link to="/wishlist" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[var(--color-secondary)] transition-colors relative cursor-pointer">
                 <div className="relative">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
                   </svg>
                   {wishlistCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-[#08CB00] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-1.5 bg-[var(--color-secondary)] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                       {wishlistCount}
                     </span>
                   )}
@@ -189,7 +189,7 @@ export default function Navbar() {
               </Link>
 
               {/* Cart */}
-              <Link to="/cart" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[#08CB00] transition-colors relative cursor-pointer">
+              <Link to="/cart" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[var(--color-secondary)] transition-colors relative cursor-pointer">
                 <div className="relative">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 7h13M7 13H5.4M10 21a1 1 0 100-2 1 1 0 000 2zm7 0a1 1 0 100-2 1 1 0 000 2z"/>
@@ -206,7 +206,7 @@ export default function Navbar() {
               <div className="w-px h-10 bg-gray-100 mx-2" />
 
               {/* Account */}
-              <Link to="/account" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[#08CB00] transition-colors cursor-pointer">
+              <Link to="/account" className="flex flex-col items-center gap-0.5 px-3 py-1 text-gray-600 hover:text-[var(--color-secondary)] transition-colors cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
@@ -215,7 +215,7 @@ export default function Navbar() {
 
               {/* Mobile Toggle */}
               <button
-                className="ml-2 p-2 text-gray-600 hover:text-[#08CB00] transition-colors lg:hidden"
+                className="ml-2 p-2 text-gray-600 hover:text-[var(--color-secondary)] transition-colors lg:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -228,12 +228,12 @@ export default function Navbar() {
         </header>
 
         {/* ROW 2 — Navigation (Desktop) */}
-        <nav className="bg-[#253900] h-12 hidden lg:flex items-stretch fixed top-0 left-0 right-0 z-50">
+        <nav className="bg-[var(--color-primary)] h-12 hidden lg:flex items-stretch fixed top-0 left-0 right-0 z-50">
             <div className="max-w-screen-xl mx-auto px-6 flex items-stretch w-full">
               
               {/* Categories Trigger */}
               <div className="group relative flex items-stretch">
-                <button className="flex items-center gap-2 px-6 h-full text-white text-xs font-bold tracking-widest bg-black/10 hover:bg-[#08CB00] transition-all">
+                <button className="flex items-center gap-2 px-6 h-full text-white text-xs font-bold tracking-widest bg-black/10 hover:bg-[var(--color-secondary)] transition-all">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                   </svg>
@@ -249,14 +249,14 @@ export default function Navbar() {
                     <a
                       href={link.path}
                       onClick={(e) => handleAnchorClick(e, link.path)}
-                      className="nav-link-item relative flex items-center px-5 h-full text-white text-xs font-bold tracking-widest hover:text-[#08CB00] transition-colors"
+                      className="nav-link-item relative flex items-center px-5 h-full text-white text-xs font-bold tracking-widest hover:text-[var(--color-secondary)] transition-colors"
                     >
                       {link.label}
                     </a>
                   ) : (
                     <Link
                       to={link.path}
-                      className="nav-link-item relative flex items-center px-5 h-full text-white text-xs font-bold tracking-widest hover:text-[#08CB00] transition-colors"
+                      className="nav-link-item relative flex items-center px-5 h-full text-white text-xs font-bold tracking-widest hover:text-[var(--color-secondary)] transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -264,7 +264,7 @@ export default function Navbar() {
                 </div>
               ))}
 
-              <Link to="/shop" className="flex items-center gap-1.5 px-6 h-full text-[#08CB00] text-xs font-black tracking-widest hover:bg-white/5 ml-auto">
+              <Link to="/shop" className="flex items-center gap-1.5 px-6 h-full text-white text-xs font-black tracking-widest hover:bg-white/5 ml-auto">
                 ⚡ EXCLUSIVE DEALS
               </Link>
             </div>
@@ -272,14 +272,14 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#253900] border-t border-white/10 z-40">
+          <div className="lg:hidden bg-[var(--color-primary)] border-t border-white/10 z-40">
               {NAV_LINKS.map((link) => (
                 link.isAnchor ? (
                   <a
                     key={link.label}
                     href={link.path}
                     onClick={(e) => handleAnchorClick(e, link.path)}
-                    className="block px-6 py-4 text-white text-sm font-bold border-b border-white/5 hover:bg-[#08CB00]"
+                    className="block px-6 py-4 text-white text-sm font-bold border-b border-white/5 hover:bg-[var(--color-secondary)]"
                   >
                     {link.label}
                   </a>
@@ -288,7 +288,7 @@ export default function Navbar() {
                     key={link.label}
                     to={link.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-6 py-4 text-white text-sm font-bold border-b border-white/5 hover:bg-[#08CB00]"
+                    className="block px-6 py-4 text-white text-sm font-bold border-b border-white/5 hover:bg-[var(--color-secondary)]"
                   >
                     {link.label}
                   </Link>
@@ -315,7 +315,7 @@ export default function Navbar() {
             
             <div className="ml-auto flex items-center gap-2 px-6 py-3 text-gray-700 whitespace-nowrap">
               <span className="text-lg">📞</span>
-              <a href="tel:12345678" className="text-xs font-bold hover:text-[#08CB00] transition-colors">
+              <a href="tel:12345678" className="text-xs font-bold hover:text-[var(--color-secondary)] transition-colors">
                 Support: 24/7
               </a>
             </div>

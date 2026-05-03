@@ -16,7 +16,7 @@ import 'swiper/css/pagination';
 
 
 // import required modules
-import { EffectCoverflow, Pagination } from 'swiper/modules';
+import { EffectCoverflow, Pagination, Scrollbar, Mousewheel } from 'swiper/modules';
 
 const Bestsellers = () => {
   const modalRef = useRef(null);
@@ -120,28 +120,30 @@ const Bestsellers = () => {
   return (
     <section className="max-w-8xl mx-auto px-4 py-16">
   <div className="flex justify-between items-center mb-6 relative z-10 text-black">
-      <h2 className="text-3xl font-semibold border-b-2 border-[#08CB00] pb-1">Best Sellers</h2>
-      <a href="/shop" className="text-sm text-[#08CB00] hover:underline">View All</a>
+      <h2 className="text-3xl font-semibold border-b-2 border-[var(--color-secondary)] pb-1">Best Sellers</h2>
+      <a href="/shop" className="text-sm text-[var(--color-secondary)] hover:underline">View All</a>
   </div>
 <div className="relative z-0 overflow-hidden">
   
 <Swiper
-        effect={'coverflow'}
-        grabCursor={true}
-        centeredSlides={true}
-        slidesPerView={'auto'}
-        coverflowEffect={{
-          rotate: 50,
-          stretch: 0,
-          depth: 100,
-          modifier: 1,
-          slideShadows: true,
-        }}
-        style={{ paddingTop: '20px', paddingBottom: '50px' }} 
-        pagination={true}
-        modules={[EffectCoverflow, Pagination]}
-        className="mySwiper"
-      >
+  effect={'coverflow'}
+  grabCursor={true}
+  centeredSlides={true}
+  slidesPerView={'auto'}
+  mousewheel={true} // 👈 add this
+  coverflowEffect={{
+    rotate: 50,
+    stretch: 0,
+    depth: 100,
+    modifier: 1,
+    slideShadows: true,
+  }}
+  pagination={true}
+  scrollbar={{ draggable: true, hide: false }}
+  modules={[EffectCoverflow, Pagination, Scrollbar, Mousewheel]} // 👈 add Mousewheel
+  className="mySwiper"
+  style={{ paddingTop: '20px', paddingBottom: '50px' }}
+>
         
                    {bestsellerList.map((p,index) => (
                 <SwiperSlide key={`bestseller-${p.id}-${index}`} style={{ width: 'auto' }}>
@@ -199,7 +201,7 @@ const Bestsellers = () => {
                 <h2 id="modal-title" className="mb-4 text-3xl font-bold text-gray-900">{modalProduct.name}</h2>
                 <p className="mb-6 text-gray-700">{modalProduct.description}</p>
 
-                <div className="mb-8 text-2xl font-bold text-[#08CB00]">
+                <div className="mb-8 text-2xl font-bold text-[var(--color-secondary)]">
                   ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
                   {modalProduct.onSale && (
                     <span className="ml-3 text-base font-medium text-gray-500 line-through">${modalProduct.price}</span>
@@ -212,7 +214,7 @@ const Bestsellers = () => {
                     handleAddToCart(modalProduct, event);
                     closeModal();
                   }}
-                  className="w-full rounded-xl bg-[#253900] py-4 font-bold text-white transition-colors hover:bg-[#08CB00]"
+                  className="w-full rounded-xl bg-[var(--color-primary)] py-4 font-bold text-white transition-colors hover:bg-[var(--color-secondary)]"
                 >
                   Add to Cart
                 </button>

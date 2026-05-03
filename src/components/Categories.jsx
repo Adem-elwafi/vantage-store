@@ -70,10 +70,10 @@ const Categories = () => {
           <Link
             to={`/category/${category.slug}`} 
             key={index}
-            className="group rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-[#08CB00] hover:shadow-sm"
+            className="group rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-[var(--color-secondary)] hover:shadow-sm"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 transition-colors duration-200 group-hover:border-[#08CB00] group-hover:text-[#08CB00]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 transition-colors duration-200 group-hover:border-[var(--color-secondary)] group-hover:text-[var(--color-secondary)]">
                 <category.icon className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0">

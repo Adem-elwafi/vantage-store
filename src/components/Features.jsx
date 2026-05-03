@@ -47,14 +47,14 @@ const Features = () => {
         {features.map((feature, index) => (
           <div 
             key={index} 
-            className="group relative flex flex-col items-center text-center p-6 rounded-xl bg-[#253900]/80 hover:bg-[#1a2a00] backdrop-blur-sm border border-[#1a2a00] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            className="group relative flex flex-col items-center text-center p-6 rounded-xl bg-[var(--color-primary)]/80 hover:bg-[#1a2a00] backdrop-blur-sm border border-[#1a2a00] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
-            <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-[#08CB00]/20 text-[#08CB00] mb-4 group-hover:bg-[#08CB00]/30 group-hover:text-[#08CB00] transition-colors">
+            <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-[var(--color-secondary)]/20 text-white mb-4 group-hover:bg-[var(--color-secondary)]/30 group-hover:text-white transition-colors">
               {feature.icon}
             </div>
-            <h3 className="text-lg font-semibold text-[#EEEEEE] mb-2">{feature.name}</h3>
-            <p className="text-sm text-[#EEEEEE]/80">{feature.description}</p>
-            <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-[#08CB00]/30 pointer-events-none transition-all duration-300"></div>
+            <h3 className="text-lg font-semibold text-white mb-2">{feature.name}</h3>
+            <p className="text-sm text-white/85">{feature.description}</p>
+            <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-[var(--color-secondary)]/30 pointer-events-none transition-all duration-300"></div>
           </div>
         ))}
       </div>

@@ -1,4 +1,13 @@
 @import "tailwindcss";
+
+:root {
+  --color-primary: #35858E;
+  --color-secondary: #7DA78C;
+  --color-accent: #C2D099;
+  --color-background: #E6EEC9;
+  --color-text: #243238;
+}
+
 #app {
   height: 100%;
 }
@@ -9,14 +18,14 @@ body {
 }
 
 body {
-  background: #000;
+  background: var(--color-background);
   font-family:
     Helvetica Neue,
     Helvetica,
     Arial,
     sans-serif;
   font-size: 14px;
-  color: #fff;
+  color: var(--color-text);
   margin: 0;
   padding: 0;
 }

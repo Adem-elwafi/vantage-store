@@ -49,7 +49,7 @@ const Wishlist = () => {
             <p className="text-gray-600 mb-6">Your wishlist is empty</p>
             <Link
               to="/shop"
-              className="inline-block px-6 py-3 bg-[#253900] text-white rounded-lg hover:bg-[#08CB00] transition-colors"
+              className="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition-colors"
             >
               Start Shopping
             </Link>
@@ -93,12 +93,12 @@ const Wishlist = () => {
               {/* Product Details */}
               <div className="p-4 flex flex-col flex-1">
                 <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{item.name}</h3>
-                <p className="text-lg font-bold text-[#08CB00] mb-4">${item.price?.toFixed(2)}</p>
+                <p className="text-lg font-bold text-[var(--color-secondary)] mb-4">${item.price?.toFixed(2)}</p>
 
                 {/* Actions */}
                 <button
                   onClick={() => handleAddToCart(item)}
-                  className="w-full flex items-center justify-center gap-2 bg-[#253900] text-white py-2 rounded-lg hover:bg-[#08CB00] hover:scale-105 transition-all duration-200 mt-auto cursor-pointer font-medium"
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] text-white py-2 rounded-lg hover:bg-[var(--color-secondary)] hover:scale-105 transition-all duration-200 mt-auto cursor-pointer font-medium"
                 >
                   <FiShoppingCart className="w-4 h-4" />
                   Add to Cart

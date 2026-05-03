@@ -23,10 +23,10 @@ const Newsletter = () => {
 
   if (isSubscribed) {
     return (
-      <div className="bg-[#08CB00] py-12 px-4 sm:px-6 lg:px-8 rounded-2xl border-2 border-[#000000]/10 shadow-lg">
+      <div className="bg-[var(--color-secondary)] py-12 px-4 sm:px-6 lg:px-8 rounded-2xl border-2 border-[#000000]/10 shadow-lg">
         <div className="max-w-3xl mx-auto text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#000000] mb-6">
-            <FiCheck className="h-8 w-8 text-[#EEEEEE]" />
+            <FiCheck className="h-8 w-8 text-[var(--color-accent)]" />
           </div>
           <h2 className="text-2xl font-bold text-[#000000] sm:text-3xl">
             You're all set!
@@ -40,14 +40,14 @@ const Newsletter = () => {
   }
 
   return (
-    <div className="bg-[#08CB00] py-12 px-4 sm:px-6 lg:px-8 rounded-2xl relative overflow-hidden border-2 border-[#000000]/10 shadow-xl">
+    <div className="bg-[var(--color-secondary)] py-12 px-4 sm:px-6 lg:px-8 rounded-2xl relative overflow-hidden border-2 border-[#000000]/10 shadow-xl">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds.png')] opacity-[0.03]"></div>
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="lg:flex lg:items-center lg:justify-between">
           <div className="lg:w-1/2 lg:pr-12 mb-8 lg:mb-0">
             <div className="flex items-center mb-4">
               <div className="flex items-center justify-center h-12 w-12 rounded-full bg-[#000000] mr-3">
-                <FiMail className="h-6 w-6 text-[#EEEEEE]" />
+                <FiMail className="h-6 w-6 text-[var(--color-accent)]" />
               </div>
               <h3 className="text-sm font-bold text-[#000000] uppercase tracking-wider">
                 Tech Updates
@@ -82,7 +82,7 @@ const Newsletter = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex items-center justify-center px-6 py-3.5 border-2 border-transparent text-base font-bold rounded-lg text-[#000000] bg-[#EEEEEE] hover:bg-[#FFFFFF] hover:border-[#000000]/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#000000] transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 ${isLoading ? 'opacity-80 cursor-not-allowed' : 'shadow-md hover:shadow-lg'}`}
+                className={`w-full flex items-center justify-center px-6 py-3.5 border-2 border-transparent text-base font-bold rounded-lg text-[#000000] bg-[var(--color-accent)] hover:bg-[#FFFFFF] hover:border-[#000000]/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#000000] transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 ${isLoading ? 'opacity-80 cursor-not-allowed' : 'shadow-md hover:shadow-lg'}`}
               >
                 {isLoading ? (
                   <span className="flex items-center">
