@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import { addToWishlist } from '../features/wishlist/wishlistSlice';
-import { useProducts } from '../hooks/useProducts'; 
-import ProductCard from '../components/ProductCard'; 
+import { useProducts } from '../hooks/useProducts';
+import ProductCard from '../components/ProductCard';
+import ProductQuickViewModal from '../components/ProductQuickViewModal';
 
-const categories = ['All', 'Laptops', 'Smartphones', 'Headphones', 'Smartwatches'];
+/* ─── Brand tokens ─────────────────────────────────────────────────── */
+const G = '#08CB00';
+const GD = '#059900';
+const GMUTED = 'rgba(8,203,0,0.10)';
 
-const categoryAliasMap = {
+/* ─── Data ──────────────────────────────────────────────────────────── */
+const CATEGORIES = ['All', 'Laptops', 'Smartphones', 'Headphones', 'Smartwatches'];
+
+const CATEGORY_ALIAS = {
   'Laptops & PCs': 'Laptops',
   Audio: 'Headphones',
   Wearables: 'Smartwatches',
 };
 
-const slugCategoryMap = {
+const SLUG_MAP = {
   'laptops-pcs': 'Laptops',
   smartphones: 'Smartphones',
   gaming: 'Gaming',
@@ -23,146 +29,318 @@ const slugCategoryMap = {
   wearables: 'Smartwatches',
 };
 
-const resolveCategory = (value) => categoryAliasMap[value] ?? value;
+const resolveCategory = (v) => CATEGORY_ALIAS[v] ?? v;
 
+/* ─── Tiny helpers ──────────────────────────────────────────────────── */
+
+/* ─── Styles (inline, theme-safe) ──────────────────────────────────── */
+const S = {
+  page: {
+    minHeight: '100vh',
+    background: 'var(--color-background)',
+    color: '#1d1d1f',
+    paddingTop: 40,
+    fontFamily: "'DM Sans', system-ui, sans-serif",
+  },
+  container: { maxWidth: 1280, margin: '0 auto', padding: '0 24px 64px' },
+
+  /* header strip */
+  topBar: {
+    display: 'flex', alignItems: 'flex-end',
+    justifyContent: 'space-between', flexWrap: 'wrap',
+    gap: 20, marginBottom: 36,
+  },
+  eyebrow: {
+    margin: '0 0 4px', fontSize: 12, fontWeight: 700,
+    letterSpacing: '0.1em', textTransform: 'uppercase', color: GD,
+  },
+  pageTitle: {
+    margin: 0, fontSize: 34, fontWeight: 800,
+    letterSpacing: '-0.03em', lineHeight: 1, color: 'inherit',
+  },
+  countBadge: {
+    fontSize: 13, fontWeight: 600, color: '#888',
+    background: 'rgba(0,0,0,0.06)', padding: '4px 12px',
+    borderRadius: 20, alignSelf: 'flex-end',
+  },
+
+  /* search */
+  searchWrap: {
+    position: 'relative', display: 'flex',
+    alignItems: 'center', marginBottom: 28,
+  },
+  searchIcon: {
+    position: 'absolute', left: 16, top: '50%',
+    transform: 'translateY(-50%)', pointerEvents: 'none',
+    color: '#aaa', fontSize: 18,
+  },
+  searchInput: {
+    width: '100%', padding: '14px 20px 14px 48px',
+    fontSize: 15, fontWeight: 500,
+    border: '1.5px solid rgba(0,0,0,0.1)',
+    borderRadius: 16, outline: 'none', background: '#fff',
+    color: '#1d1d1f', transition: 'border-color 0.2s, box-shadow 0.2s',
+  },
+
+  /* category tabs */
+  tabRow: {
+    display: 'flex', gap: 8, flexWrap: 'wrap',
+    marginBottom: 36, alignItems: 'center',
+  },
+
+  /* grid */
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+    gap: 28,
+  },
+
+  /* empty state */
+  empty: {
+    textAlign: 'center', padding: '80px 20px',
+    display: 'flex', flexDirection: 'column',
+    alignItems: 'center', gap: 16,
+  },
+  emptyIcon: {
+    width: 80, height: 80, borderRadius: '50%',
+    background: GMUTED, display: 'flex',
+    alignItems: 'center', justifyContent: 'center',
+    fontSize: 36,
+  },
+  emptyTitle: { fontSize: 20, fontWeight: 700, margin: 0 },
+  emptyMsg: { fontSize: 14, color: '#888', margin: 0 },
+
+};
+
+/* ─── CategoryTab ───────────────────────────────────────────────────── */
+function CategoryTab({ label, active, onClick }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        padding: '9px 20px', borderRadius: 30,
+        border: active ? 'none' : '1.5px solid rgba(0,0,0,0.1)',
+        background: active ? G : hov ? GMUTED : '#fff',
+        color: active ? '#000' : hov ? GD : '#555',
+        fontSize: 13, fontWeight: active ? 800 : 600,
+        cursor: 'pointer', letterSpacing: active ? '0.02em' : 0,
+        transition: 'all 0.2s',
+        boxShadow: active ? `0 4px 14px rgba(8,203,0,0.35)` : 'none',
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+/* ─── Animated card wrapper ─────────────────────────────────────────── */
+function AnimatedCard({ children, index }) {
+  const ref = useRef();
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    const t = setTimeout(() => {
+      el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.23,1,0.32,1)';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, index * 55);
+    return () => clearTimeout(t);
+  }, [index]);
+  return (
+    <div ref={ref} style={{ padding: '6px' }}>
+      {children}
+    </div>
+  );
+}
+
+/* ─── Empty State ───────────────────────────────────────────────────── */
+function EmptyState({ onReset }) {
+  return (
+    <div style={S.empty}>
+      <div style={S.emptyIcon}>🔍</div>
+      <h3 style={S.emptyTitle}>No products found</h3>
+      <p style={S.emptyMsg}>Try adjusting your search or switching categories.</p>
+      <button
+        onClick={onReset}
+        style={{
+          marginTop: 4, padding: '10px 24px', borderRadius: 20,
+          border: `1.5px solid ${G}`, background: 'transparent',
+          color: GD, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+          transition: 'background 0.2s',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = GMUTED)}
+        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+      >
+        Clear filters
+      </button>
+    </div>
+  );
+}
+
+/* ─── Main ──────────────────────────────────────────────────────────── */
 export default function Shop() {
-  const { slug } = useParams(); 
+  const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const { getProductsByCategory } = useProducts(); 
+  const { getProductsByCategory } = useProducts();
   const dispatch = useDispatch();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-
-  // Modal State for Quick View
   const [modalProduct, setModalProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const urlSearch = searchParams.get('search') ?? '';
   const urlCategory = searchParams.get('cat') ?? '';
 
   useEffect(() => {
-    const nextCategory = resolveCategory(urlCategory || slugCategoryMap[slug] || 'All');
     setSearchTerm(urlSearch);
-    setSelectedCategory(nextCategory);
+    setSelectedCategory(resolveCategory(urlCategory || SLUG_MAP[slug] || 'All'));
   }, [slug, urlCategory, urlSearch]);
 
   const activeCategory = resolveCategory(selectedCategory);
   const categoryProducts = getProductsByCategory(activeCategory);
 
-  const filteredProducts = categoryProducts.filter(product => {
-    const matchesSearch = searchTerm === '' || product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
-
-    return matchesSearch && matchesCategory;
+  const filteredProducts = categoryProducts.filter((p) => {
+    const matchSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCat = activeCategory === 'All' || p.category === activeCategory;
+    return matchSearch && matchCat;
   });
 
-  // Action Handlers
-  const handleAddToCart = (product) => {
+  const handleAddToCart = useCallback((product) => {
     dispatch(addItemToCart({
-      id: product.id,
-      name: product.name,
+      id: product.id, name: product.name,
       price: product.onSale ? product.salePrice : product.price,
-      image: product.image,
-      quantity: 1
+      image: product.image, quantity: 1,
     }));
-  };
+  }, [dispatch]);
 
-  const handleAddToWishlist = (product) => {
+  const handleAddToWishlist = useCallback((product) => {
     dispatch(addToWishlist(product));
-  };
+  }, [dispatch]);
 
   const openModal = (product) => {
     setModalProduct(product);
-    setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    document.body.style.overflow = 'auto';
+    setModalProduct(null);
+    document.body.style.overflow = '';
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('All');
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[#1d1d1f] pt-10">
-      <main className="container mx-auto px-4 py-8">
-        {/* Search and Filter UI */}
-        <div className="mb-8 flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)]"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+    <div style={S.page}>
+      <main style={S.container}>
+
+        {/* Top bar */}
+        <div style={S.topBar}>
+          <div>
+            <p style={S.eyebrow}>Browse our collection</p>
+            <h1 style={S.pageTitle}>
+              Shop
+              <span style={{
+                display: 'inline-block', width: 8, height: 8,
+                background: G, borderRadius: '50%',
+                marginLeft: 6, verticalAlign: 'middle', marginBottom: 5,
+              }} />
+            </h1>
           </div>
-          <select
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--color-secondary)] cursor-pointer outline-none"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
+          {filteredProducts.length > 0 && (
+            <div style={S.countBadge}>
+              {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+            </div>
+          )}
         </div>
 
-        {/* Products Grid */}
+        {/* Search */}
+        <div style={S.searchWrap}>
+          <svg
+            style={S.searchIcon} width="18" height="18"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search products…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            style={{
+              ...S.searchInput,
+              borderColor: searchFocused ? G : 'rgba(0,0,0,0.1)',
+              boxShadow: searchFocused ? `0 0 0 3px ${GMUTED}` : 'none',
+            }}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              style={{
+                position: 'absolute', right: 14, top: '50%',
+                transform: 'translateY(-50%)',
+                width: 28, height: 28, borderRadius: '50%',
+                border: 'none', background: 'rgba(0,0,0,0.07)',
+                cursor: 'pointer', fontSize: 14, color: '#666',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Category tabs */}
+        <div style={S.tabRow}>
+          {CATEGORIES.map((cat) => (
+            <CategoryTab
+              key={cat}
+              label={cat}
+              active={selectedCategory === cat}
+              onClick={() => setSelectedCategory(cat)}
+            />
+          ))}
+        </div>
+
+        {/* Grid or empty */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
-          </div>
+          <EmptyState onReset={clearFilters} />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={() => handleAddToCart(product)}
-                onAddToWishlist={() => handleAddToWishlist(product)}
-                onQuickView={() => openModal(product)}
-              />
+          <div style={S.grid}>
+            {filteredProducts.map((product, i) => (
+              <AnimatedCard key={product.id} index={i}>
+                <ProductCard
+                  product={product}
+                  layout="grid"
+                  onAddToCart={() => handleAddToCart(product)}
+                  onAddToWishlist={() => handleAddToWishlist(product)}
+                  onQuickView={() => openModal(product)}
+                />
+              </AnimatedCard>
             ))}
           </div>
         )}
       </main>
 
-      {/* Quick View Modal Implementation */}
-      {isModalOpen && modalProduct && (
-        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" onClick={closeModal}>
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative" onClick={e => e.stopPropagation()}>
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full z-10 cursor-pointer transition-colors"
-              aria-label="Close modal"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <div className="p-8 md:flex gap-8">
-              <div className="md:w-1/2">
-                <img src={modalProduct.image} alt={modalProduct.name} className="w-full h-auto rounded-xl object-contain bg-gray-50" />
-              </div>
-              <div className="md:w-1/2 flex flex-col justify-center">
-                <h2 className="text-3xl font-bold mb-4">{modalProduct.name}</h2>
-                <p className="text-gray-600 mb-6">{modalProduct.description}</p>
-                <div className="text-2xl font-bold text-[var(--color-secondary)] mb-8">
-                  ${modalProduct.onSale ? modalProduct.salePrice : modalProduct.price}
-                  {modalProduct.onSale && (
-                    <span className="ml-3 text-base font-medium text-gray-500 line-through">${modalProduct.price}</span>
-                  )}
-                </div>
-                <button 
-                  onClick={() => { handleAddToCart(modalProduct); closeModal(); }}
-                  className="w-full bg-[var(--color-primary)] text-white py-4 rounded-xl font-bold hover:bg-[var(--color-secondary)] transition-colors cursor-pointer"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Quick View Modal */}
+      {modalProduct && (
+        <ProductQuickViewModal
+          product={modalProduct}
+          onClose={closeModal}
+          onAddToCart={handleAddToCart}
+        />
       )}
     </div>
   );

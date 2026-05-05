@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useProducts } from '../hooks/useProducts';
 
-const ACCENT = '#08CB00';
-const ACCENT_DARK = '#059900';
-const ACCENT_MUTED = 'rgba(8,203,0,0.12)';
+const PRIMARY = '#0A0A0F';
+const SECONDARY = '#1A1A2E';
+const ACCENT = '#C9A84C';
+const SURFACE = '#E8E8E8';
+const ACCENT_MUTED = 'rgba(201,168,76,0.14)';
 
 const Tag = ({ children }) => (
   <span style={{
     display: 'inline-flex', alignItems: 'center', gap: 4,
-    background: ACCENT_MUTED, color: ACCENT_DARK,
+    background: ACCENT_MUTED, color: SECONDARY,
     fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
     textTransform: 'uppercase', padding: '3px 8px',
-    borderRadius: 4, border: `1px solid rgba(8,203,0,0.25)`,
+    borderRadius: 4, border: `1px solid rgba(201,168,76,0.25)`,
   }}>
     {children}
   </span>
@@ -20,10 +22,10 @@ const Tag = ({ children }) => (
 const SaleBadge = () => (
   <div style={{
     position: 'absolute', top: 14, right: 14, zIndex: 10,
-    background: '#FF3B30', color: '#fff',
+    background: ACCENT, color: PRIMARY,
     fontSize: 11, fontWeight: 800, letterSpacing: '0.07em',
     textTransform: 'uppercase', padding: '4px 10px',
-    borderRadius: 20, boxShadow: '0 2px 8px rgba(255,59,48,0.4)',
+    borderRadius: 20, boxShadow: '0 2px 8px rgba(201,168,76,0.25)',
     lineHeight: 1,
   }}>
     Sale
@@ -44,7 +46,7 @@ const GiftCard = ({ product, size = 'regular', style = {} }) => {
         display: 'block', position: 'relative',
         height: isLarge ? '100%' : '100%',
         borderRadius: 20, overflow: 'hidden',
-        textDecoration: 'none', background: '#0a0a0a',
+        textDecoration: 'none', background: SECONDARY,
         cursor: 'pointer', flexShrink: 0,
         boxShadow: hovered
           ? `0 20px 48px rgba(0,0,0,0.28), 0 0 0 2px ${ACCENT}`
@@ -117,8 +119,8 @@ const GiftCard = ({ product, size = 'regular', style = {} }) => {
           )}
           {product.onSale && (
             <span style={{
-              background: 'rgba(255,59,48,0.18)',
-              color: '#FF6B6B',
+              background: 'rgba(201,168,76,0.18)',
+              color: ACCENT,
               fontSize: 11, fontWeight: 700,
               padding: '2px 7px', borderRadius: 20,
               letterSpacing: '0.03em',
@@ -209,7 +211,7 @@ const GiftIdeas = () => {
             margin: '0 0 4px',
             fontSize: 12, fontWeight: 700,
             letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: ACCENT_DARK,
+            color: SECONDARY,
           }}>
             Curated for you
           </p>
@@ -238,7 +240,7 @@ const GiftIdeas = () => {
                   style={{
                     width: i === page ? 24 : 8, height: 8,
                     borderRadius: 4, border: 'none', padding: 0,
-                    background: i === page ? ACCENT : 'rgba(0,0,0,0.15)',
+                    background: i === page ? ACCENT : 'rgba(10,10,15,0.15)',
                     cursor: 'pointer',
                     transition: 'width 0.3s ease, background 0.2s',
                   }}
@@ -248,7 +250,7 @@ const GiftIdeas = () => {
           )}
           <a href="/shop" style={{
             fontSize: 13, fontWeight: 700,
-            color: ACCENT_DARK, textDecoration: 'none',
+            color: SECONDARY, textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 4,
             padding: '8px 16px', borderRadius: 20,
             border: `1.5px solid ${ACCENT}`,
@@ -309,7 +311,7 @@ const GiftIdeas = () => {
               onMouseEnter={e => {
                 e.currentTarget.style.background = ACCENT;
                 e.currentTarget.style.borderColor = ACCENT;
-                e.currentTarget.style.color = '#000';
+                e.currentTarget.style.color = PRIMARY;
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'transparent';

@@ -1,19 +1,12 @@
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FiTrash2, FiShoppingCart } from 'react-icons/fi';
-import { removeFromWishlist } from '../features/wishlist/wishlistSlice';
 import { addItemToCart } from '../features/cart/cartSlice';
+import ProductCard from '../components/ProductCard';
 
 const Wishlist = () => {
   const dispatch = useDispatch();
-  
-  // Get wishlist items from Redux store
   const wishlistItems = useSelector((state) => state.wishlist.items);
-
-  const handleRemoveItem = useCallback((itemId) => {
-    dispatch(removeFromWishlist(itemId));
-  }, [dispatch]);
 
   const handleAddToCart = useCallback((item) => {
     dispatch(addItemToCart({
@@ -67,43 +60,18 @@ const Wishlist = () => {
           <p className="text-gray-600">{wishlistItems.length} item{wishlistItems.length !== 1 ? 's' : ''}</p>
         </div>
 
-        {/* Wishlist Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {wishlistItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col"
+              className="flex justify-center"
             >
-              {/* Product Image */}
-              <div className="relative h-48 bg-gray-100 flex items-center justify-center overflow-hidden group">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                />
-                <button
-                  onClick={() => handleRemoveItem(item.id)}
-                  className="absolute top-2 right-2 p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors z-10 cursor-pointer"
-                  aria-label="Remove from wishlist"
-                >
-                  <FiTrash2 className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Product Details */}
-              <div className="p-4 flex flex-col flex-1">
-                <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{item.name}</h3>
-                <p className="text-lg font-bold text-[var(--color-secondary)] mb-4">${item.price?.toFixed(2)}</p>
-
-                {/* Actions */}
-                <button
-                  onClick={() => handleAddToCart(item)}
-                  className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] text-white py-2 rounded-lg hover:bg-[var(--color-secondary)] hover:scale-105 transition-all duration-200 mt-auto cursor-pointer font-medium"
-                >
-                  <FiShoppingCart className="w-4 h-4" />
-                  Add to Cart
-                </button>
-              </div>
+              <ProductCard
+                product={item}
+                layout="grid"
+                onAddToCart={() => handleAddToCart(item)}
+                onQuickView={() => {}}
+              />
             </div>
           ))}
         </div>

@@ -142,7 +142,7 @@ const HomePage = () => {
         </section>
         
         {/* 5. Newsletter - Standardized Padding */}
-        <section aria-labelledby="newsletter-heading" className="bg-white py-20">
+        <section aria-labelledby="newsletter-heading" className="bg-white py-20 text-white">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Newsletter />
           </div>

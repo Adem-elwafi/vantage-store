@@ -26,12 +26,12 @@ const Newsletter = () => {
       <div className="bg-[var(--color-secondary)] py-12 px-4 sm:px-6 lg:px-8 rounded-2xl border-2 border-[#000000]/10 shadow-lg">
         <div className="max-w-3xl mx-auto text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#000000] mb-6">
-            <FiCheck className="h-8 w-8 text-[var(--color-accent)]" />
+            <FiCheck className="h-8 w-8 text-[var(--color-background)]" />
           </div>
-          <h2 className="text-2xl font-bold text-[#000000] sm:text-3xl">
+          <h2 className="text-2xl font-bold text-[#ffffff] sm:text-3xl">
             You're all set!
           </h2>
-          <p className="mt-3 text-[#000000] font-medium">
+          <p className="mt-3 text-[#ffffff] font-medium">
             Thanks for subscribing to TechTrend. You'll receive our latest updates, exclusive deals, and tech news directly to your inbox.
           </p>
         </div>
@@ -49,14 +49,14 @@ const Newsletter = () => {
               <div className="flex items-center justify-center h-12 w-12 rounded-full bg-[#000000] mr-3">
                 <FiMail className="h-6 w-6 text-[var(--color-accent)]" />
               </div>
-              <h3 className="text-sm font-bold text-[#000000] uppercase tracking-wider">
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
                 Tech Updates
               </h3>
             </div>
-            <h2 className="text-3xl font-bold text-[#000000] sm:text-4xl leading-tight">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl leading-tight">
               Stay Ahead with Our<br />Tech Newsletter
             </h2>
-            <p className="mt-4 text-[#000000] text-lg font-medium">
+            <p className="mt-4 text-white text-lg font-medium">
               Get the latest tech news, product releases, and exclusive deals delivered straight to your inbox.
             </p>
           </div>

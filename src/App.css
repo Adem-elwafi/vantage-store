@@ -19,6 +19,6 @@
 
 /* Focus ring for interactive items */
 .focus-outline:focus {
-  outline: 3px solid rgba(37,57,0,0.18);
+  outline: 3px solid rgba(201,168,76,0.28);
   outline-offset: 2px;
 }

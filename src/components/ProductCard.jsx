@@ -3,10 +3,20 @@ import { FiStar, FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToWishlist, removeFromWishlist } from '../features/wishlist/wishlistSlice';
 
-const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => {
+const ProductCard = ({
+  product,
+  onAddToCart = () => {},
+  onAddToWishlist = () => {},
+  onQuickView = () => {},
+  layout = 'carousel',
+}) => {
   const { name, price, salePrice, onSale, image, rating, isNew } = product;
   const dispatch = useDispatch();
   const [isAdded, setIsAdded] = useState(false);
+  const displayPrice = onSale ? salePrice : price;
+  const cardWidthClass = layout === 'grid'
+    ? 'w-full min-w-0'
+    : 'flex-shrink-0 w-[240px] sm:w-[280px] md:w-[300px] lg:w-[320px]';
   
   // Check if product is already in wishlist
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -42,7 +52,7 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
 
   return (
     <div
-      className="group relative bg-[var(--color-accent)] rounded-lg shadow-sm hover:shadow-lg transition p-4 snap-start cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] flex-shrink-0 w-[240px] sm:w-[280px] md:w-[300px] lg:w-[320px]"
+      className={`group relative bg-[var(--color-accent)] rounded-lg shadow-sm hover:shadow-lg transition p-4 snap-start cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] ${cardWidthClass}`}
       onClick={() => onQuickView(product)}
     >
       {/* Badges */}
@@ -87,10 +97,10 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onQuickView }) => 
       
       <div className="mt-1 flex items-center space-x-2">
         <span className="text-xl font-semibold text-[var(--color-secondary)]">
-          ${onSale ? salePrice : price}
+          ${Number(displayPrice).toFixed(2)}
         </span>
         {onSale && (
-          <span className="line-through text-gray-500 text-sm">${price}</span>
+          <span className="line-through text-gray-500 text-sm">${Number(price).toFixed(2)}</span>
         )}
       </div>
 
